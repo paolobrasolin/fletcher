@@ -1,0 +1,11 @@
+{
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "collectCoverage": false,
+  "collectCoverageFrom": ["src/**/*.ts", "!src/**/*.spec.ts"],
+  "notify": true,
+  "testEnvironment": "node",
+  "testRegex": "/src/.+\\.spec\\.ts$",
+  "roots": ["<rootDir>/src"]
+}
