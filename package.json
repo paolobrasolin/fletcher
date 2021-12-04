@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "grammars:calculator": "nearleyc src/grammars/calculator.ne > src/grammars/calculator.ts",
+    "grammars:xymatrix": "nearleyc src/grammars/xymatrix.ne > src/grammars/xymatrix.ts",
     "grammars": "npm-run-all --parallel grammars:*",
     "build": "npm run grammars && tsc",
     "lint:check": "eslint .",
@@ -20,7 +21,7 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "watch:grammars": "onchange -a 'src/grammars/*.ne' -- npm run grammars:{{fileBaseNoExt}}",
-    "watch:test": "jest --watchAll",
+    "watch:test": "jest --watch",
     "watch": "npm-run-all --parallel watch:*"
   },
   "author": "Paolo Brasolin <paolo.brasolin@gmail.com>",
