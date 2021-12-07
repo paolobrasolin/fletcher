@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "grammars:calculator": "nearleyc src/grammars/calculator.ne > src/grammars/calculator.ts",
-    "grammars:xymatrix": "nearleyc src/grammars/xymatrix.ne > src/grammars/xymatrix.ts",
+    "grammars:xypic": "nearleyc src/grammars/xypic.ne > src/grammars/xypic.ts",
     "grammars": "npm-run-all --parallel grammars:*",
     "build": "npm run grammars && tsc",
     "lint:check": "eslint .",
