@@ -7,8 +7,6 @@ import * as nearley from "nearley";
 
 import xypicGrammar from "./xypic";
 
-//≡[ Preamble ]≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
-
 //=[ Parsing ]==================================================================
 
 const parse = function (chunk: string, start?: string) {
@@ -76,9 +74,9 @@ const testExamples = function (
   });
 };
 
-//≡[ Tests ]≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+//█[ I | The Kernel ]███████████████████████████████████████████████████████████
 
-//=[ <pos>itions ]==============================================================
+//■[ I.3 | Positions ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 testExamples(
   "pos",
@@ -168,6 +166,47 @@ testExamples(
 
 testExamples("slide", ["/1pt/"]);
 
-//=[ <decor>ations ]============================================================
+//■[ I.4 | Objects ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-testExamples("decor", ["\\restore"]);
+testExamples("object", ["{}", "!0{}"]);
+
+testExamples("objectbox", [
+  "{}",
+  // library_object
+  "@{}",
+  "\\hbox{}",
+  "\\object{}",
+  "\\composite{{}}",
+  "\\xybox{}",
+]);
+
+testExamples("modifier", ["!0", "!{}", "+0", "h", "i", "[]", "[=]", "l"]);
+
+testExamples("add_op", ["+", "-", "=", "+=", "-="]);
+
+testExamples("size", ["", "0"]);
+
+testExamples("direction", ["l", "v0", "q{}", "l:0", "l_", "l^"]);
+
+testExamples("diag", ["l", "r", "d", "u", "ld", "rd", "lu", "ru"]);
+
+testExamples("composite", ["{}", "{}*{}", "{}*{}*{}"]);
+
+//■[ I.5 | Decorations ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+testExamples("decor", [
+  "",
+  "\\save0",
+  "\\restore",
+  "\\POS0",
+  "\\afterPOS{\\relax}0",
+  "\\drop{}",
+  "\\connect{}",
+  "\\relax",
+  "\\xyverbose",
+  "\\xytracing",
+  "\\xyquiet",
+  "\\xyignore{0\\relax}",
+  "\\xycompile{0\\relax}",
+  "\\xycompileto{foobar}{0\\relax}",
+]);

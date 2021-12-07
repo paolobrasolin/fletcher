@@ -1,3 +1,24 @@
+#==[ References ]===============================================================
+
+# The whole grammar is structured after [RM].
+# Still, there are other useful references to keep in mind.
+#
+# [WS]: Xy-pic — Typesetting Graphs and Diagrams in TeX.
+#       Kristoffer H. Rose.
+#       https://tug.org/applications/Xy-pic/
+#
+# [UG]: XY-pic User's Guide.
+#       Kristoffer H. Rose.
+#       Version 3.8.9 2013/10/06.
+#       https://ctan.mirror.garr.it/mirrors/ctan/macros/generic/diagrams/xypic/doc/xyguide.pdf
+#
+# [RM]: XY-pic Reference Manual.
+#       Kristoffer H. Rose and Ross R. Moore.
+#       Version 3.8.9 2013/10/06.
+#       https://ctan.mirror.garr.it/mirrors/ctan/macros/generic/diagrams/xypic/doc/xyrefer.pdf
+
+#==[ Extra JS and postprocessors ]=============================================
+
 @preprocessor typescript
 
 @{%
@@ -11,17 +32,7 @@ const deepJoin = function(data : any[] | string) : string {
 }
 %}
 
-main -> _ "\\xymatrix" _ "{" entries "}" _  {% (d) => d[4] %}
-
-entries -> row ("\\\\" row):*               {% ([d, ds]) => stripSepAndFlatten(d, ds) %}
-
-row -> cell ("&" cell):*                    {% ([d, ds]) => stripSepAndFlatten(d, ds) %}
-
-cell -> [^&\\]:*                            {% (d) : string => d[0].join("").trim() %}
-
-_ -> [\s]:*                                 {% (d) => null %}
-
-#==[ Common ]===================================================================
+#==[ Basic TeX ]================================================================
 
 letter -> [a-zA-Z]
 nonletter -> [^a-zA-Z]
@@ -69,9 +80,17 @@ tex_code_nonempty ->
   | control_sequence
   ):+ {% deepJoin %}
 
-#==============================================================================
+#==[ Completion ]===============================================================
 
-# [RM, footnote 2]
+# Some rules are mentioned and never explained in [RM]; we define them here.
+
+name -> letter:+ # TODO: what are allowed chars for filenames?
+cs -> control_sequence
+
+#██[ I | The Kernel ]███████████████████████████████████████████████████████████
+
+#--[ Footnote 2 ]---------------------------------------------------------------
+
 empty -> null
 id -> letter:+ # TODO: letter:+ is too restrictive, should this be just tex_code?
 dimen -> decimal unit
@@ -79,24 +98,13 @@ factor -> decimal
 number -> integer
 text -> tex_code
 
-cs -> control_sequence
-# stuff -> TODO
-# name -> TODO
-
-# shape -> TODO # [RM, 4j]
-
-# library_object -> TODO # [RM, §6]
-# tex_box -> TODO # [RM, 4b]
-
-
-
-#==[ Picture Basics [RM, §2] ]==================================================
+#■■[ I.2 | Picture Basics ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 xy -> "\\xy" pos decor "\\endxy"
 
-#==[ <pos>itions ]==============================================================
+#■■[ I.3 | Positions ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-#--[ [RM], Fig. 1 ]-------------------------------------------------------------
+#--[ Fig. 1 | <pos>itions ]-----------------------------------------------------
 
 pos ->
     # DIFF: unlike [RM], we avoid left recursion
@@ -169,9 +177,8 @@ slide ->
     # DIFF: we remove <empty> due to change in <place>
     "/" dimen "/"
 
-#--[ Cetera ]-------------------------------------------------------------------
+#--[ I.3.3o ]-------------------------------------------------------------------
 
-# [RM, 3o]
 stacking ->
       "+" coord
     | "-" coord
@@ -181,15 +188,16 @@ stacking ->
     | "("
     | ")"
 
-# [RM, 3p]
+#--[ I.3.3p ]-------------------------------------------------------------------
+
 saving ->
       ":"   "\"" id "\""
     | coord "\"" id "\""
     | "@"   "\"" id "\""
 
-#==[ <object>s ]================================================================
+#■■[ I.4 | Objects ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-#--[ [RM], Fig. 3 ]-------------------------------------------------------------
+#--[ Fig. 3 | <object>s ]-------------------------------------------------------
 
 object ->
     # DIFF: unlike [RM], we avoid right recursion
@@ -233,12 +241,23 @@ diag ->
     | "ld" | "rd" | "lu" | "ru"
 
 composite ->
-      object
-    | composite "*" object
+    # DIFF: unlike [RM], we avoid left recursion
+    object ("*" object):*
 
-#==[ <decor>ations ]============================================================
+#--[ I.4.4b ]-------------------------------------------------------------------
 
-#--[ [RM, Fig. 4] ]-------------------------------------------------------------
+# NOTE: any macro expanding to a <box> is allowed (but ofc we can't expand)
+tex_box -> box
+box -> "\\hbox" # TODO: what else is allowed?
+
+#--[ I.4.4j ]-------------------------------------------------------------------
+
+# TODO: this admits extensions, how will we handle it?
+shape -> empty | "." | "x" | "r" | "l" | "u" | "d"
+
+#■■[ I.5 | Decorations ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+#--[ Fig. 4 | <decor>ations ]---------------------------------------------------
 
 # DIFF: unlike [RM], we avoid left recursion
 decor ->
@@ -252,7 +271,7 @@ command ->
     | "\\drop" object
     | "\\connect" object
     | "\\relax"
-    | tex_commands
+    | tex_commands # TODO
     | "\\xyverbose"
     | "\\xytracing"
     | "\\xyquiet"
@@ -260,22 +279,26 @@ command ->
     | "\\xycompile" "{" pos decor "}"
     | "\\xycompileto" "{" name "}" "{" pos decor "}"
 
-#--[ Cetera ]-------------------------------------------------------------------
+#■■[ I.6 | Kernel object library ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-# [RM, Fig. 4]
-# tex_commands -> TODO
+library_object -> dir_obj | cir_obj | txt_obj
 
-#==[ <dir>ectionals ]===========================================================
+#==[ I.6.1 | <dir>ectionals ]===================================================
 
-# NOTE: there's some more complexity to this, see [RM, Fig 5].
+dir_obj -> "\\dir" dir
 
-# [RM, §6.1]
+#--[ Fig. 5 | Kernel library <dir>ectionals ]-----------------------------------
+
+# TODO: there's some more complexity to this.
+# TODO: what's the best way to handle extensions?
 dir -> variant "{" ( tipchar:* | connchar:* ) "}"
 variant -> empty | [^_0123]
 
-#==[ <cir>cles ]================================================================
+#==[ I.6.2 | Circle segments ]==================================================
 
-#--[ [RM], Fig. 6 ]-------------------------------------------------------------
+cir_obj -> "\\cir" radius "{" cir "}"
+
+#--[ Fig. 6 | <cir>cles ]-------------------------------------------------------
 
 radius ->
       empty
@@ -289,12 +312,28 @@ orient ->
       "^"
     | "_"
 
-#==[ Arrow and Path feature, [RM, §24] ]========================================
+#==[ I.6.3 | Text ]=============================================================
 
-#--[ <path>s, [RM, Fig. 14] ]---------------------------------------------------
+# TODO: this definitely needs some more thought.
+
+txt_obj -> "\\txt" width style "{" text "}"
+width -> empty | "<" dimen ">"
+style -> empty # TODO
+
+#██[ II | Extensions ]██████████████████████████████████████████████████████████
+
+# TODO
+
+#██[ III | Features ]███████████████████████████████████████████████████████████
+
+#■■[ III.24 | Arrow and Path feature ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+#==[ III.24.1 | Paths ]=========================================================
 
 PATH -> "\\PATH" path
 afterPATH -> "\\afterPATH" "{" decor "}" path
+
+#--[ Fig. 14 | <path>s ]--------------------------------------------------------
 
 path ->
       "~" action "{" stuff "}" path
@@ -332,25 +371,25 @@ it ->
 
 alias -> empty | "=\"" id "\""
 
-#--[ Cetera ]-------------------------------------------------------------------
+#--[ III.24.1.24a ]-------------------------------------------------------------
 
-# [RM, 24a]
 action -> "=" | "/"
 
-# [RM, 24b]
-which -> "<" | ">" | "="
-
 # NOTE: this is not universal
-# [RM, 24e]
-path_pos -> pos
-
-# NOTE: this is not universal
-# [RM, 24a]
 stuff -> pos decor
 
-#==[ <arrow>s ]=================================================================
+#--[ III.24.1.24b ]-------------------------------------------------------------
 
-#--[ [RM], Fig. 15 ]------------------------------------------------------------
+which -> "<" | ">" | "="
+
+#--[ III.24.1.24e ]-------------------------------------------------------------
+
+# NOTE: this is not universal
+path_pos -> pos
+
+#==[ III.24.2 | Arrows ]========================================================
+
+#--[ Fig. 15 | <arrow>s ]-------------------------------------------------------
 
 ar -> "\\ar" arrow path
 
@@ -379,35 +418,28 @@ tipchar -> [<>()|’‘+/] | letter | digit | space
 conn -> connchar:* | dir
 connchar -> [-.~=:]
 
-#--[ Cetera ]-------------------------------------------------------------------
+#--[ III.24.2.24o ]-------------------------------------------------------------
 
-# [RM, 24o]
 dist -> dimen
 
-# [RM, 24b]
-which -> "<" | ">" | "="
+#--[ III.24.2.241 ]-------------------------------------------------------------
 
-# [RM, 24q]
 # control_point_list -> TODO
 
-#==[ <twocell>s ]===============================================================
-
-#--[ [RM], Fig. 17 ]------------------------------------------------------------
+#■■[ III.25 | Two-cell feature ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 # TODO
 
-#==[ Bibliography ]=============================================================
+#--[ Fig. 17 | <twocell>s ]-----------------------------------------------------
 
-# [WS]: Xy-pic — Typesetting Graphs and Diagrams in TeX.
-#       Kristoffer H. Rose.
-#       https://tug.org/applications/Xy-pic/
+# TODO
 
-# [UG]: XY-pic User's Guide.
-#       Kristoffer H. Rose.
-#       Version 3.8.9 2013/10/06.
-#       https://ctan.mirror.garr.it/mirrors/ctan/macros/generic/diagrams/xypic/doc/xyguide.pdf
+#■■[ III.26 | Matrix feature ]■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-# [RM]: XY-pic Reference Manual.
-#       Kristoffer H. Rose and Ross R. Moore.
-#       Version 3.8.9 2013/10/06.
-#       https://ctan.mirror.garr.it/mirrors/ctan/macros/generic/diagrams/xypic/doc/xyrefer.pdf
+# TODO: this is just an experiment; we need the real thing.
+
+main -> _ "\\xymatrix" _ "{" entries "}" _  {% (d) => d[4] %}
+entries -> row ("\\\\" row):*               {% ([d, ds]) => stripSepAndFlatten(d, ds) %}
+row -> cell ("&" cell):*                    {% ([d, ds]) => stripSepAndFlatten(d, ds) %}
+cell -> [^&\\]:*                            {% (d) : string => d[0].join("").trim() %}
+_ -> [\s]:*                                 {% (d) => null %}
