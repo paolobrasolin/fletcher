@@ -26,7 +26,7 @@ The aim is being able to translate _from and to_ any of the following formats:
 - [quiver][quiver-url] internal representation (crucial: the best editor)
 - [DOT][dot-url] graph description language (simple grammar)
 - [CoDi][codi-url] based TikZ picture (crucial: mine!)
-- [tikz-cd][codi-url] based TikZ picture (crucial: gaining traction)
+- [tikz-cd][tikzcd-url] based TikZ picture (crucial: gaining traction)
 - [xymatrix][xymatrix-url] based XY-pic picture (to save people)
 - [amscd][amscd-url] figure (to save people)
 - [other][other-url] LaTeX packages
