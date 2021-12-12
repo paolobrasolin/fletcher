@@ -40,6 +40,16 @@ The aim is being able to translate _from and to_ any of the following formats:
 [dot-url]: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
 [other-url]: https://ctan.org/topic/diagram-comm
 
+## Implementation progress
+
+| Target                   | Import  | Export  |
+| ------------------------ | ------- | ------- |
+| [quiver][quiver-url]     | `▓▓▓▓░` | `░░░░░` |
+| [tikz-cd][codi-url]      | `░░░░░` | `░░░░░` |
+| [CoDi][codi-url]         | `░░░░░` | `░░░░░` |
+| [xymatrix][xymatrix-url] | `▓░░░░` | `░░░░░` |
+| [amscd][amscd-url]       | `░░░░░` | `░░░░░` |
+
 ## Abstract considerations
 
 See https://github.com/paolobrasolin/ouroboros
