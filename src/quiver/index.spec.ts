@@ -20,12 +20,12 @@ const LATIN1_RANGE_BTOAED_IN_BROWSER =
 const RUNIC_RANGE = charList(0x16a0, 0x16ff, 1);
 
 const RUNIC_RANGE_ENCODED_IN_BROWSER =
-  "IuGaoOGaoeGaouGao+GapOGapeGapuGap+GaqOGaqeGaquGaq+GarOGareGaruGar+GasOGase" +
-  "GasuGas+GatOGateGatuGat+GauOGaueGauuGau+GavOGaveGavuGav+GbgOGbgeGbguGbg+Gb" +
-  "hOGbheGbhuGbh+GbiOGbieGbiuGbi+GbjOGbjeGbjuGbj+GbkOGbkeGbkuGbk+GblOGbleGblu" +
-  "Gbl+GbmOGbmeGbmuGbm+GbnOGbneGbnuGbn+GboOGboeGbouGbo+GbpOGbpeGbpuGbp+GbqOGb" +
-  "qeGbquGbq+GbrOGbreGbruGbr+GbsOGbseGbsuGbs+GbtOGbteGbtuGbt+GbuOGbueGbuuGbu+" +
-  "GbvOGbveGbvuGbvyI=";
+  "4Zqg4Zqh4Zqi4Zqj4Zqk4Zql4Zqm4Zqn4Zqo4Zqp4Zqq4Zqr4Zqs4Zqt4Zqu4Zqv4Zqw4Zqx4Z" +
+  "qy4Zqz4Zq04Zq14Zq24Zq34Zq44Zq54Zq64Zq74Zq84Zq94Zq+4Zq/4ZuA4ZuB4ZuC4ZuD4ZuE" +
+  "4ZuF4ZuG4ZuH4ZuI4ZuJ4ZuK4ZuL4ZuM4ZuN4ZuO4ZuP4ZuQ4ZuR4ZuS4ZuT4ZuU4ZuV4ZuW4Z" +
+  "uX4ZuY4ZuZ4Zua4Zub4Zuc4Zud4Zue4Zuf4Zug4Zuh4Zui4Zuj4Zuk4Zul4Zum4Zun4Zuo4Zup" +
+  "4Zuq4Zur4Zus4Zut4Zuu4Zuv4Zuw4Zux4Zuy4Zuz4Zu04Zu14Zu24Zu34Zu44Zu54Zu64Zu74Z" +
+  "u84Zu94Zu+4Zu/";
 
 test("charList generates charaget ranges", () => {
   expect(charList(0x0041, 0x005a, 5)).toBe("AFKPUZ");

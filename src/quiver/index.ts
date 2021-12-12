@@ -10,12 +10,22 @@ export function atob(x: string) {
   return Buffer.from(x, "base64").toString("latin1");
 }
 
-export function encode(input: any): string {
-  return btoa(unescape(encodeURIComponent(JSON.stringify(input))));
+export function encode(input: string): string {
+  return btoa(unescape(encodeURIComponent(input)));
 }
 
-export function decode(input: string): any {
-  return JSON.parse(decodeURIComponent(escape(atob(input))));
+export function decode(input: string): string {
+  return decodeURIComponent(escape(atob(input)));
+}
+
+//=[ Serialization/deserialization ]============================================
+
+export function serialize(input: any): string {
+  return JSON.stringify(input);
+}
+
+export function deserialize(input: string): any {
+  return JSON.parse(input);
 }
 
 //=[ Validation ]===============================================================
