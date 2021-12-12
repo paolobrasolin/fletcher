@@ -30,22 +30,31 @@ export function deserialize(input: string): any {
 
 //=[ Validation ]===============================================================
 
+import { Main } from "./schema";
+import { validate as ssValidate, Infer } from "superstruct";
+
+export function validate(input: any): Infer<typeof Main> | undefined {
+  const [, coerced] = ssValidate(input, Main, { coerce: true });
+  return coerced;
+}
+
 //==============================================================================
 
-export function parse(input: string): string {
-  return decode(input);
-  // input = JSON.parse(decoded);
+// TODO: error handling
 
-  // try {
-  //   // We use this `decodeURIComponent`-`escape` trick to encode non-ASCII characters.
-  //   const decoded = decodeURIComponent(escape(atob(string)));
-  //   if (decoded === "") {
-  //     return quiver;
-  //   }
-  // } catch (_) {
-  //   throw new Error("invalid base64 or JSON");
-  // }
-
-  // console.log(x);
-  // return "mah";
+export function read(input: string): any {
+  const decoded = decode(input);
+  const deserialized = deserialize(decoded);
+  const validated = validate(deserialized);
+  // const injected = inject(validated);
+  // return injected;
+  return validated;
 }
+
+// export function write(input: unknown): string {
+//   const projected = project(input);
+//   const linted = lint(projected);
+//   const serialized = serialize(linted);
+//   const encoded = encode(serialized);
+//   return encoded;
+// }

@@ -1,4 +1,4 @@
-import { btoa, atob, encode, decode } from ".";
+import { btoa, atob, encode, decode, read } from ".";
 
 function charList(head: number, last: number, step = 1) {
   const codePoints = Array.from(
@@ -43,4 +43,111 @@ test("encode is compliant on unicode range", () => {
 });
 test("decode is compliant on unicode range", () => {
   expect(decode(RUNIC_RANGE_ENCODED_IN_BROWSER)).toBe(RUNIC_RANGE);
+});
+
+//==============================================================================
+
+const COMMUTATIVE_SQUARE =
+  "WzAsNCxbMCwwLCJBIl0sWzEsMCwiQiJdLFsxLDEsIkQiXSxbMCwxLCJDIl0sWzAsMSwiZiJdLF" +
+  "sxLDIsImgiXSxbMCwzLCJnIiwyXSxbMywyLCJrIiwyXV0=";
+
+const COMMUTATIVE_SQUARE_UNPACKED = [
+  0,
+  4,
+  [0, 0, "A", [0, 0, 0, 1]],
+  [1, 0, "B", [0, 0, 0, 1]],
+  [1, 1, "D", [0, 0, 0, 1]],
+  [0, 1, "C", [0, 0, 0, 1]],
+  [
+    0,
+    1,
+    "f",
+    0,
+    {
+      colour: [0, 0, 0, 1],
+      curve: 0,
+      label_position: 50,
+      length: undefined,
+      level: 1,
+      offset: 0,
+      shorten: { source: 0, target: 0 },
+      style: {
+        body: { level: undefined, name: "cell" },
+        head: { name: "arrowhead", side: undefined },
+        name: "arrow",
+        tail: { name: "none", side: undefined },
+      },
+    },
+    [0, 0, 0, 1],
+  ],
+  [
+    1,
+    2,
+    "h",
+    0,
+    {
+      colour: [0, 0, 0, 1],
+      curve: 0,
+      label_position: 50,
+      length: undefined,
+      level: 1,
+      offset: 0,
+      shorten: { source: 0, target: 0 },
+      style: {
+        body: { level: undefined, name: "cell" },
+        head: { name: "arrowhead", side: undefined },
+        name: "arrow",
+        tail: { name: "none", side: undefined },
+      },
+    },
+    [0, 0, 0, 1],
+  ],
+  [
+    0,
+    3,
+    "g",
+    2,
+    {
+      colour: [0, 0, 0, 1],
+      curve: 0,
+      label_position: 50,
+      length: undefined,
+      level: 1,
+      offset: 0,
+      shorten: { source: 0, target: 0 },
+      style: {
+        body: { level: undefined, name: "cell" },
+        head: { name: "arrowhead", side: undefined },
+        name: "arrow",
+        tail: { name: "none", side: undefined },
+      },
+    },
+    [0, 0, 0, 1],
+  ],
+  [
+    3,
+    2,
+    "k",
+    2,
+    {
+      colour: [0, 0, 0, 1],
+      curve: 0,
+      label_position: 50,
+      length: undefined,
+      level: 1,
+      offset: 0,
+      shorten: { source: 0, target: 0 },
+      style: {
+        body: { level: undefined, name: "cell" },
+        head: { name: "arrowhead", side: undefined },
+        name: "arrow",
+        tail: { name: "none", side: undefined },
+      },
+    },
+    [0, 0, 0, 1],
+  ],
+];
+
+test("a simple commutative square can be read", () => {
+  expect(read(COMMUTATIVE_SQUARE)).toEqual(COMMUTATIVE_SQUARE_UNPACKED);
 });
