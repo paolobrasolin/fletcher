@@ -46,7 +46,7 @@ See https://github.com/paolobrasolin/ouroboros
 
 ## Practical considerations
 
-There are ways many roads to implementation, but we can fix a two constraints:
+There are ways many roads to implementation, but we can fix two constraints:
 
 - this must work in a browser
 - this must be written in a pleasant language
