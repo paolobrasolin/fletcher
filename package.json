@@ -27,7 +27,8 @@
   "author": "Paolo Brasolin <paolo.brasolin@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "nearley": "^2.20.1"
+    "nearley": "^2.20.1",
+    "superstruct": "^0.15.3"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
