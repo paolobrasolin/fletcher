@@ -8,9 +8,7 @@
     "/dist"
   ],
   "scripts": {
-    "grammars:calculator": "nearleyc src/grammars/calculator.ne > src/grammars/calculator.ts",
-    "grammars:xypic": "nearleyc src/grammars/xypic.ne > src/grammars/xypic.ts",
-    "grammars": "npm-run-all --parallel grammars:*",
+    "grammars": "foreach --glob 'src/**/*.ne' --execute 'nearleyc #{path} --out #{dir}/#{name}.ts'",
     "build": "npm run grammars && tsc",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -20,7 +18,7 @@
     "style:fix": "npm-run-all --serial format:fix lint:fix",
     "test": "jest",
     "coverage": "jest --coverage",
-    "watch:grammars": "onchange -a 'src/grammars/*.ne' -- npm run grammars:{{fileBaseNoExt}}",
+    "watch:grammars": "onchange --add 'src/**/*.ne' -- nearleyc {{file}} --out {{fileDir}}/{{fileBaseNoExt}}.ts",
     "watch:test": "jest --watch",
     "watch": "npm-run-all --parallel watch:*"
   },
@@ -40,6 +38,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "foreach-cli": "^1.8.1",
     "jest": "^27.4.2",
     "node-notifier": "^10.0.0",
     "npm-run-all": "^4.1.5",
