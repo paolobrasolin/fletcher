@@ -3,3 +3,4 @@ dist
 node_modules
 src/grammars/*.ts
 !src/grammars/*.spec.ts
+src/**/grammar.ts
