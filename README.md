@@ -46,7 +46,7 @@ The aim is being able to translate _from and to_ any of the following formats:
 | Target                   | Import  | Export  |
 | ------------------------ | ------- | ------- |
 | [quiver][quiver-url]     | `▓▓▓▓░` | `░░░░░` |
-| [amscd][amscd-url]       | `▓▓▓░░` | `░░░░░` |
+| [amscd][amscd-url]       | `▓▓▓▓░` | `░░░░░` |
 | [tikz-cd][codi-url]      | `░░░░░` | `░░░░░` |
 | [CoDi][codi-url]         | `░░░░░` | `░░░░░` |
 | [xymatrix][xymatrix-url] | `▓░░░░` | `░░░░░` |

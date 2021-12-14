@@ -2,6 +2,7 @@ import { spawn } from "child_process";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
+import { format } from "util";
 
 import * as nearley from "nearley";
 
@@ -21,13 +22,13 @@ const parse = function (chunk: string, start?: string) {
 
 const TMP_PATH = path.join(process.cwd(), ".tests");
 
-// beforeAll(() => {
-//   return fs.mkdirSync(TMP_PATH);
-// });
+beforeAll(() => {
+  return fs.mkdirSync(TMP_PATH);
+});
 
-// afterAll(() => {
-//   return fs.rmSync(TMP_PATH, { recursive: true, force: true });
-// });
+afterAll(() => {
+  return fs.rmSync(TMP_PATH, { recursive: true, force: true });
+});
 
 const TEMPLATE = (body: string): string => `
 \\documentclass{standalone}
@@ -57,94 +58,325 @@ const compile = (body: string, template = TEMPLATE) => {
 
 //=[ Helpers ]==================================================================
 
-const testExamples = function (
-  start: string,
-  examples: string[],
-  context?: (example: string) => string,
-) {
-  describe(start, () => {
-    describe.each(examples)("%s", (example) => {
-      // NOTE: this checks that 1) it parses and 2) has no ambiguity
-      test("parses", () => expect(parse(example, start)).toHaveLength(1));
-      if (!context) return;
-      (process.env.COMPILE ? test : test.skip)("compiles", async () => {
-        await expect(compile(context(example))).resolves.toBe(0);
-      });
+const quickCheck =
+  (start: string, context?: (example: string) => string) =>
+  (input: string, output: any) => {
+    const result = parse(input, start);
+    test("it parses unabiguously", () => expect(result).toHaveLength(1));
+    test(format("it parses to %O", output), () =>
+      expect(result[0]).toEqual(output),
+    );
+    if (!context) return;
+    (process.env.COMPILE ? test : test.skip)("compiles", async () => {
+      await expect(compile(context(input))).resolves.toBe(0);
     });
-  });
-};
+  };
 
 //=[ Basics ]===================================================================
 
-testExamples("label", [
-  "f",
-  "f g",
-  "f g h",
-  "{}",
-  "{{}{{}}{{{}}}}",
-  " { f { g { h { i } j } k } l } ",
-  "\\mathcal{L}_\\Omega",
-]);
+describe("label", () => {
+  describe.each([
+    ["f", "f"],
+    ["f g", "f g"],
+    ["f g h", "f g h"],
+    ["{}", "{}"],
+    ["{{}{{}}{{{}}}}", "{{}{{}}{{{}}}}"],
+    [" { f { g { h { i } j } k } l } ", " { f { g { h { i } j } k } l } "],
+    ["\\mathcal{L}_\\Omega", "\\mathcal{L}_\\Omega"],
+  ])(
+    "%O",
+    quickCheck("label", (example) => `$\\begin{CD}${example}\\end{CD}$`),
+  );
+});
 
 //=[ Arrows ]===================================================================
 
-testExamples("empty_arrow", ["@."]);
-testExamples("horizontal_equals", ["@="]);
-testExamples("vertical_equals", ["@|", "@\\vert"]);
-testExamples("up_arrow", ["@AAA", "@AfAA", "@AAgA", "@AfAgA"]);
-testExamples("down_arrow", ["@VVV", "@VfVV", "@VVgV", "@VfVgV"]);
-testExamples("left_arrow", [
-  "@<<<",
-  "@<f<<",
-  "@<<g<",
-  "@<f<g<",
-  "@(((",
-  "@(f((",
-  "@((g(",
-  "@(f(g(",
-]);
-testExamples("right_arrow", [
-  "@>>>",
-  "@>f>>",
-  "@>>g>",
-  "@>f>g>",
-  "@)))",
-  "@)f))",
-  "@))g)",
-  "@)f)g)",
-]);
+describe("empty_arrow", () => {
+  describe.each([
+    ["@.", ["."]],
+    ["@ .", ["."]],
+  ])(
+    "%O",
+    quickCheck(
+      "empty_arrow",
+      (example) => `$\\begin{CD}A${example}B\\end{CD}$`,
+    ),
+  );
+});
+
+describe("horizontal_equals", () => {
+  describe.each([
+    ["@=", ["="]],
+    ["@ =", ["="]],
+  ])(
+    "%O",
+    quickCheck(
+      "horizontal_equals",
+      (example) => `$\\begin{CD}A${example}B\\end{CD}$`,
+    ),
+  );
+});
+
+describe("vertical_equals", () => {
+  describe.each([
+    ["@|", ["|"]],
+    ["@ |", ["|"]],
+    ["@\\vert", ["\\vert"]],
+    ["@ \\vert", ["\\vert"]],
+  ])(
+    "%O",
+    quickCheck(
+      "vertical_equals",
+      (example) => `$\\begin{CD}A\\\\${example}\\\\B\\end{CD}$`,
+    ),
+  );
+});
+
+describe("up_arrow", () => {
+  describe.each([
+    ["@AAA", ["A", "", ""]],
+    ["@ A f  o  o A\r\n\tA", ["A", "f o o", ""]],
+    ["@AfAA", ["A", "f", ""]],
+    ["@AAgA", ["A", "", "g"]],
+    ["@AfAgA", ["A", "f", "g"]],
+    ["@A{A}A{A}A", ["A", "{A}", "{A}"]],
+  ])(
+    "%O",
+    quickCheck(
+      "up_arrow",
+      (example) => `$\\begin{CD}A\\\\${example}\\\\B\\end{CD}$`,
+    ),
+  );
+});
+
+describe("down_arrow", () => {
+  describe.each([
+    ["@VVV", ["V", "", ""]],
+    ["@ V f  o  o V\r\n\tV", ["V", "f o o", ""]],
+    ["@VfVV", ["V", "f", ""]],
+    ["@VVgV", ["V", "", "g"]],
+    ["@VfVgV", ["V", "f", "g"]],
+    ["@V{V}V{V}V", ["V", "{V}", "{V}"]],
+  ])(
+    "%O",
+    quickCheck(
+      "down_arrow",
+      (example) => `$\\begin{CD}A\\\\${example}\\\\B\\end{CD}$`,
+    ),
+  );
+});
+
+describe("left_arrow", () => {
+  describe.each([
+    ["@<<<", ["<", "", ""]],
+    ["@ < f  o  o <\r\n\t<", ["<", "f o o", ""]],
+    ["@<f<<", ["<", "f", ""]],
+    ["@<<g<", ["<", "", "g"]],
+    ["@<f<g<", ["<", "f", "g"]],
+    ["@<{<}<{<}<", ["<", "{<}", "{<}"]],
+    ["@(((", ["(", "", ""]],
+    ["@ ( f  o  o (\r\n\t(", ["(", "f o o", ""]],
+    ["@(f((", ["(", "f", ""]],
+    ["@((g(", ["(", "", "g"]],
+    ["@(f(g(", ["(", "f", "g"]],
+    ["@({(}({(}(", ["(", "{(}", "{(}"]],
+  ])(
+    "%O",
+    quickCheck("left_arrow", (example) => `$\\begin{CD}A${example}B\\end{CD}$`),
+  );
+});
+
+describe("right_arrow", () => {
+  describe.each([
+    ["@>>>", [">", "", ""]],
+    ["@ > f  o  o >\r\n\t>", [">", "f o o", ""]],
+    ["@>f>>", [">", "f", ""]],
+    ["@>>g>", [">", "", "g"]],
+    ["@>f>g>", [">", "f", "g"]],
+    ["@>{>}>{>}>", [">", "{>}", "{>}"]],
+    ["@)))", [")", "", ""]],
+    ["@ ) f  o  o )\r\n\t)", [")", "f o o", ""]],
+    ["@)f))", [")", "f", ""]],
+    ["@))g)", [")", "", "g"]],
+    ["@)f)g)", [")", "f", "g"]],
+    ["@){)}){)})", [")", "{)}", "{)}"]],
+  ])(
+    "%O",
+    quickCheck(
+      "right_arrow",
+      (example) => `$\\begin{CD}A${example}B\\end{CD}$`,
+    ),
+  );
+});
 
 //=[ Layout ]===================================================================
 
-testExamples("horizontal_edge", ["@.", "@=", "@<<<", "@>>>"]);
-testExamples("vertical_edge", ["@.", "@|", "@AAA", "@VVV"]);
+describe("horizontal_edge", () => {
+  describe.each([
+    ["@.", ["."]],
+    ["@=", ["="]],
+    ["@<<<", ["<", "", ""]],
+    ["@>>>", [">", "", ""]],
+  ])(
+    "%O",
+    quickCheck(
+      "horizontal_edge",
+      (example) => `$\\begin{CD}A${example}B\\end{CD}$`,
+    ),
+  );
+});
 
-testExamples("odd_row", ["F", "F @>>> G", "F @>>> G @>>> H"]);
-testExamples("even_row", ["@VVV", "@VVV @VVV", "@VVV @VVV @VVV"]);
+describe("vertical_edge", () => {
+  describe.each([
+    ["@.", ["."]],
+    ["@|", ["|"]],
+    ["@AAA", ["A", "", ""]],
+    ["@VVV", ["V", "", ""]],
+  ])(
+    "%O",
+    quickCheck(
+      "vertical_edge",
+      (example) => `$\\begin{CD}A\\\\${example}\\\\B\\end{CD}$`,
+    ),
+  );
+});
 
-testExamples("matrix", [
-  "F",
-  "F @>>> G",
-  "F @>>> G @>>> H",
-  `F \\\\\n @VVV \\\\\n G`,
-  "F \\\\\n @VVV \\\\\n G \\\\\n @VVV \\\\\n H",
-  "F @>>> G \\\\\n @VVV @VVV \\\\\n H @>>> I",
-  "F @>>> G @>>> H \\\\\n @VVV @VVV @VVV \\\\\n I @>>> J @>>> K \\\\\n @VVV @VVV @VVV \\\\\n L @>>> M @>>> N",
-]);
+describe("odd_row", () => {
+  describe.each([
+    ["F", ["F"]],
+    ["F @>>> G", ["F", [">", "", ""], "G"]],
+    ["F @>>> G @>>> H", ["F", [">", "", ""], "G", [">", "", ""], "H"]],
+  ])(
+    "%O",
+    quickCheck("odd_row", (example) => `$\\begin{CD}${example}\\end{CD}$`),
+  );
+});
+
+describe("even_row", () => {
+  describe.each([
+    ["@VVV", [["V", "", ""]]],
+    [
+      "@VVV @VVV",
+      [
+        ["V", "", ""],
+        ["V", "", ""],
+      ],
+    ],
+    [
+      "@VVV @VVV @VVV",
+      [
+        ["V", "", ""],
+        ["V", "", ""],
+        ["V", "", ""],
+      ],
+    ],
+  ])(
+    "%O",
+    quickCheck("even_row", (example) => `$\\begin{CD}\\\\${example}\\end{CD}$`),
+  );
+});
+
+describe("matrix", () => {
+  describe.each([
+    ["F", [["F"]]],
+    ["F @>>> G", [["F", [">", "", ""], "G"]]],
+    ["F @>>> G @>>> H", [["F", [">", "", ""], "G", [">", "", ""], "H"]]],
+    [`F \\\\\n @VVV \\\\\n G`, [["F"], [["V", "", ""]], ["G"]]],
+    [
+      "F \\\\\n @VVV \\\\\n G \\\\\n @VVV \\\\\n H",
+      [["F"], [["V", "", ""]], ["G"], [["V", "", ""]], ["H"]],
+    ],
+    [
+      "F @>>> G \\\\\n @VVV @VVV \\\\\n H @>>> I",
+      [
+        ["F", [">", "", ""], "G"],
+        [
+          ["V", "", ""],
+          ["V", "", ""],
+        ],
+        ["H", [">", "", ""], "I"],
+      ],
+    ],
+    [
+      "F @>>> G @>>> H \\\\\n @VVV @VVV @VVV \\\\\n I @>>> J @>>> K \\\\\n @VVV @VVV @VVV \\\\\n L @>>> M @>>> N",
+      [
+        ["F", [">", "", ""], "G", [">", "", ""], "H"],
+        [
+          ["V", "", ""],
+          ["V", "", ""],
+          ["V", "", ""],
+        ],
+        ["I", [">", "", ""], "J", [">", "", ""], "K"],
+        [
+          ["V", "", ""],
+          ["V", "", ""],
+          ["V", "", ""],
+        ],
+        ["L", [">", "", ""], "M", [">", "", ""], "N"],
+      ],
+    ],
+  ])(
+    "%O",
+    quickCheck("matrix", (example) => `$\\begin{CD}${example}\\end{CD}$`),
+  );
+});
 
 //=[ Main ]=====================================================================
 
-testExamples("main", [
-  `\\begin{CD}
+describe("main", () => {
+  describe.each([
+    [
+      `\\begin{CD}
 S^{{\\mathcal{W}}_\\Lambda}\\otimes T @>j>> T\\\\
 @VVV @VV{\\End P}V\\\\
 (S\\otimes T)/I @= (Z\\otimes T)/J
 \\end{CD}`,
-  `\\begin{CD}
+      [
+        ["S^{{\\mathcal{W}}_\\Lambda}\\otimes T", [">", "j", ""], "T"],
+        [
+          ["V", "", ""],
+          ["V", "", "{\\End P}"],
+        ],
+        ["(S\\otimes T)/I", ["="], "(Z\\otimes T)/J"],
+      ],
+    ],
+    [
+      `\\begin{CD}
 \\cov(\\mathcal{L}) @>>> \\non(\\mathcal{K}) @>>> \\cf(\\mathcal{K}) @>>>
 \\cf(\\mathcal{L})\\\\
 @VVV @AAA @AAA @VVV\\\\
 \\add(\\mathcal{L}) @>>> \\add(\\mathcal{K}) @>>> \\cov(\\mathcal{K}) @>>>
 \\non(\\mathcal{L})
 \\end{CD}`,
-]);
+      [
+        [
+          "\\cov(\\mathcal{L})",
+          [">", "", ""],
+          "\\non(\\mathcal{K})",
+          [">", "", ""],
+          "\\cf(\\mathcal{K})",
+          [">", "", ""],
+          "\\cf(\\mathcal{L})",
+        ],
+        [
+          ["V", "", ""],
+          ["A", "", ""],
+          ["A", "", ""],
+          ["V", "", ""],
+        ],
+        [
+          "\\add(\\mathcal{L})",
+          [">", "", ""],
+          "\\add(\\mathcal{K})",
+          [">", "", ""],
+          "\\cov(\\mathcal{K})",
+          [">", "", ""],
+          "\\non(\\mathcal{L})",
+        ],
+      ],
+    ],
+  ])(
+    "%O",
+    quickCheck("main", (example) => `$\\begin{CD}${example}\\end{CD}$`),
+  );
+});

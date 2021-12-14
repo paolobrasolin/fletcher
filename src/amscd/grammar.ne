@@ -13,39 +13,72 @@
 
 @preprocessor typescript
 
+@{%
+
+const deepJoin = function(data : any[] | string) : string {
+  if (typeof data === "string") return data
+  if (data === null) return ""
+  return data.map(deepJoin).join("")
+}
+
+const squish = function(input : string) : string {
+  return input.trim().replace(/\s+/g, ' ')
+}
+%}
+
 #==[ Basics ]===================================================================
 
-_ -> [\s]:* {% (d) => null %}
+_ -> [\s]:* {% () => null %}
 grp[SAFE, UNSAFE] -> ( "{" $UNSAFE:? "}" | $SAFE ):+
 
-label -> grp[[^{}@], label]
+label -> grp[[^{}@], label] {% (d) => deepJoin(d) %}
 
 #==[ Arrows ]===================================================================
 
-empty_arrow -> "@."
+unlabeled_arrow[SEP] -> "@" _ $SEP
+  {% (d) => [d[2][0]] %}
 
-horizontal_equals -> "@="
-vertical_equals -> "@|" | "@\\vert"
+empty_arrow       -> unlabeled_arrow["."]      {% id %}
+horizontal_equals -> unlabeled_arrow["="]      {% id %}
+vertical_equals   -> unlabeled_arrow["|"]      {% id %}
+                   | unlabeled_arrow["\\vert"] {% id %}
 
 labeled_arrow[SEP, LAB] -> "@" _ $SEP $LAB:? $SEP $LAB:? $SEP
+  {% (d) => [d[2][0], squish(deepJoin(d[3])), squish(deepJoin(d[5]))] %}
 
-up_arrow ->    labeled_arrow["A", grp[[^{}@A], label]]
-down_arrow ->  labeled_arrow["V", grp[[^{}@V], label]]
-left_arrow ->  labeled_arrow["<", grp[[^{}@<], label]]
-             | labeled_arrow["(", grp[[^{}@(], label]]
-right_arrow -> labeled_arrow[">", grp[[^{}@>], label]]
-             | labeled_arrow[")", grp[[^{}@)], label]]
+up_arrow    -> labeled_arrow["A", grp[[^{}@A], label]] {% id %}
+down_arrow  -> labeled_arrow["V", grp[[^{}@V], label]] {% id %}
+left_arrow  -> labeled_arrow["<", grp[[^{}@<], label]] {% id %}
+             | labeled_arrow["(", grp[[^{}@(], label]] {% id %}
+right_arrow -> labeled_arrow[">", grp[[^{}@>], label]] {% id %}
+             | labeled_arrow[")", grp[[^{}@)], label]] {% id %}
 
 #==[ Layout ]===================================================================
 
-node -> label
-horizontal_edge -> empty_arrow | horizontal_equals | left_arrow | right_arrow
-vertical_edge -> empty_arrow | vertical_equals | up_arrow | down_arrow
+node -> label {% (d) => squish(d[0]) %}
+
+horizontal_edge -> empty_arrow        {% id %}
+                 | horizontal_equals  {% id %}
+                 | left_arrow         {% id %}
+                 | right_arrow        {% id %}
+
+vertical_edge   -> empty_arrow        {% id %}
+                 | vertical_equals    {% id %}
+                 | up_arrow           {% id %}
+                 | down_arrow         {% id %}
 
 odd_row -> node ( horizontal_edge node ):*
-even_row -> _ vertical_edge ( _ vertical_edge ):* _
-matrix -> odd_row ( "\\\\" even_row "\\\\" odd_row ):*
+  {% ([x, xs]) => [x, ...xs.flat(1)] %}
+
+even_row -> ( _ vertical_edge ):+ _
+  {% (d) => d.flat(2).filter(x => x) %}
+
+row_sep -> "\\\\" {% () => null %}
+
+matrix -> odd_row ( row_sep even_row row_sep odd_row ):*
+  {% ([r, rs]) => [r, ...rs.flat(1).filter((x : any) => x)] %}
 
 #==[ Main ]=====================================================================
 
 main -> "\\begin{CD}" matrix "\\end{CD}"
+  {% (d) => d[1] %}
