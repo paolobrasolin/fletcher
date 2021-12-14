@@ -71,7 +71,7 @@ odd_row -> node ( horizontal_edge node ):*
   {% ([x, xs]) => [x, ...xs.flat(1)] %}
 
 even_row -> ( _ vertical_edge ):+ _
-  {% (d) => d.flat(2).filter(x => x) %}
+  {% (d) => d.flat(2).slice(1,-1) %}
 
 row_sep -> "\\\\" {% () => null %}
 

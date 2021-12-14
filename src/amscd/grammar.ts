@@ -218,7 +218,7 @@ const grammar: Grammar = {
     {"name": "even_row$ebnf$1", "symbols": ["even_row$ebnf$1$subexpression$1"]},
     {"name": "even_row$ebnf$1$subexpression$2", "symbols": ["_", "vertical_edge"]},
     {"name": "even_row$ebnf$1", "symbols": ["even_row$ebnf$1", "even_row$ebnf$1$subexpression$2"], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "even_row", "symbols": ["even_row$ebnf$1", "_"], "postprocess": (d) => d.flat(2).filter(x => x)},
+    {"name": "even_row", "symbols": ["even_row$ebnf$1", "_"], "postprocess": (d) => d.flat(2).slice(1,-1)},
     {"name": "row_sep$string$1", "symbols": [{"literal":"\\"}, {"literal":"\\"}], "postprocess": (d) => d.join('')},
     {"name": "row_sep", "symbols": ["row_sep$string$1"], "postprocess": () => null},
     {"name": "matrix$ebnf$1", "symbols": []},
