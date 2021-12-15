@@ -21,36 +21,28 @@
 
 This project is a sourcecode transpiler for commutative diagrams.
 
-The aim is being able to translate _from and to_ any of the following formats:
+The aim is being able to translate from and to **any** format, most of which are LaTeX DSLs.
+Here is the current progress:
 
-- [quiver][quiver-url] internal representation (crucial: the best editor)
-- [DOT][dot-url] graph description language (simple grammar)
-- [CoDi][codi-url] based TikZ picture (crucial: mine!)
-- [tikz-cd][tikzcd-url] based TikZ picture (crucial: gaining traction)
-- [xymatrix][xymatrix-url] based XY-pic picture (to save people)
-- [amscd][amscd-url] figure (to save people)
-- [other][other-url] LaTeX packages
-- ...
+| Target                   | Import       | Export       |
+| ------------------------ | ------------ | ------------ |
+| [amscd][amscd-url]       | `▓▓▓▓▓▓▓▓▓░` | `░░░░░░░░░░` |
+| [amscdx][amscdx-url]     | `▓▓▓▓░░░░░░` | `░░░░░░░░░░` |
+| [CoDi][codi-url]         | `░░░░░░░░░░` | `░░░░░░░░░░` |
+| [DOT][dot-url]           | `░░░░░░░░░░` | `░░░░░░░░░░` |
+| [quiver][quiver-url]     | `▓▓▓▓▓▓▓▓░░` | `░░░░░░░░░░` |
+| [tikz-cd][codi-url]      | `░░░░░░░░░░` | `░░░░░░░░░░` |
+| [xymatrix][xymatrix-url] | `▓▓░░░░░░░░` | `░░░░░░░░░░` |
+| ...                      |              |              |
 
-[quiver-url]: https://github.com/varkor/quiver
+[amscd-url]: https://ctan.org/pkg/amscd
+[amscdx-url]: https://ctan.org/pkg/amscdx
 [codi-url]: https://github.com/paolobrasolin/commutative-diagrams/
+[dot-url]: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
+[quiver-url]: https://github.com/varkor/quiver
 [tikzcd-url]: https://github.com/astoff/tikz-cd
 [xymatrix-url]: https://ctan.org/pkg/xymatrix
-[amscd-url]: https://ctan.org/pkg/amscd
-[dot-url]: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
 [other-url]: https://ctan.org/topic/diagram-comm
-[amscd-url]: https://ctan.org/pkg/amscd
-
-## Implementation progress
-
-| Target                   | Import  | Export  |
-| ------------------------ | ------- | ------- |
-| [quiver][quiver-url]     | `▓▓▓▓░` | `░░░░░` |
-| [amscd][amscd-url]       | `▓▓▓▓░` | `░░░░░` |
-| [tikz-cd][codi-url]      | `░░░░░` | `░░░░░` |
-| [CoDi][codi-url]         | `░░░░░` | `░░░░░` |
-| [xymatrix][xymatrix-url] | `▓░░░░` | `░░░░░` |
-| [amscd][amscd-url]       | `░░░░░` | `░░░░░` |
 
 ## Abstract considerations
 
