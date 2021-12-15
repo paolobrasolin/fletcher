@@ -7,6 +7,7 @@ import { format } from "util";
 import * as nearley from "nearley";
 
 import grammar from "./grammar";
+import { EdgeKind } from "./schema";
 
 //=[ Parsing ]==================================================================
 
@@ -93,8 +94,8 @@ describe("label", () => {
 
 describe("empty_arrow", () => {
   describe.each([
-    ["@.", ["."]],
-    ["@ .", ["."]],
+    ["@.", [EdgeKind.Empty]],
+    ["@ .", [EdgeKind.Empty]],
   ])(
     "%O",
     quickCheck(
@@ -106,8 +107,8 @@ describe("empty_arrow", () => {
 
 describe("horizontal_equals", () => {
   describe.each([
-    ["@=", ["="]],
-    ["@ =", ["="]],
+    ["@=", [EdgeKind.HorizontalEquals]],
+    ["@ =", [EdgeKind.HorizontalEquals]],
   ])(
     "%O",
     quickCheck(
@@ -119,10 +120,10 @@ describe("horizontal_equals", () => {
 
 describe("vertical_equals", () => {
   describe.each([
-    ["@|", ["|"]],
-    ["@ |", ["|"]],
-    ["@\\vert", ["\\vert"]],
-    ["@ \\vert", ["\\vert"]],
+    ["@|", [EdgeKind.VerticalEquals]],
+    ["@ |", [EdgeKind.VerticalEquals]],
+    ["@\\vert", [EdgeKind.VerticalEquals]],
+    ["@ \\vert", [EdgeKind.VerticalEquals]],
   ])(
     "%O",
     quickCheck(
@@ -134,12 +135,12 @@ describe("vertical_equals", () => {
 
 describe("up_arrow", () => {
   describe.each([
-    ["@AAA", ["A", "", ""]],
-    ["@ A f  o  o A\r\n\tA", ["A", "f o o", ""]],
-    ["@AfAA", ["A", "f", ""]],
-    ["@AAgA", ["A", "", "g"]],
-    ["@AfAgA", ["A", "f", "g"]],
-    ["@A{A}A{A}A", ["A", "{A}", "{A}"]],
+    ["@AAA", [EdgeKind.UpArrow, "", ""]],
+    ["@ A f  o  o A\r\n\tA", [EdgeKind.UpArrow, "f o o", ""]],
+    ["@AfAA", [EdgeKind.UpArrow, "f", ""]],
+    ["@AAgA", [EdgeKind.UpArrow, "", "g"]],
+    ["@AfAgA", [EdgeKind.UpArrow, "f", "g"]],
+    ["@A{A}A{A}A", [EdgeKind.UpArrow, "{A}", "{A}"]],
   ])(
     "%O",
     quickCheck(
@@ -151,12 +152,12 @@ describe("up_arrow", () => {
 
 describe("down_arrow", () => {
   describe.each([
-    ["@VVV", ["V", "", ""]],
-    ["@ V f  o  o V\r\n\tV", ["V", "f o o", ""]],
-    ["@VfVV", ["V", "f", ""]],
-    ["@VVgV", ["V", "", "g"]],
-    ["@VfVgV", ["V", "f", "g"]],
-    ["@V{V}V{V}V", ["V", "{V}", "{V}"]],
+    ["@VVV", [EdgeKind.DownArrow, "", ""]],
+    ["@ V f  o  o V\r\n\tV", [EdgeKind.DownArrow, "f o o", ""]],
+    ["@VfVV", [EdgeKind.DownArrow, "f", ""]],
+    ["@VVgV", [EdgeKind.DownArrow, "", "g"]],
+    ["@VfVgV", [EdgeKind.DownArrow, "f", "g"]],
+    ["@V{V}V{V}V", [EdgeKind.DownArrow, "{V}", "{V}"]],
   ])(
     "%O",
     quickCheck(
@@ -168,18 +169,18 @@ describe("down_arrow", () => {
 
 describe("left_arrow", () => {
   describe.each([
-    ["@<<<", ["<", "", ""]],
-    ["@ < f  o  o <\r\n\t<", ["<", "f o o", ""]],
-    ["@<f<<", ["<", "f", ""]],
-    ["@<<g<", ["<", "", "g"]],
-    ["@<f<g<", ["<", "f", "g"]],
-    ["@<{<}<{<}<", ["<", "{<}", "{<}"]],
-    ["@(((", ["(", "", ""]],
-    ["@ ( f  o  o (\r\n\t(", ["(", "f o o", ""]],
-    ["@(f((", ["(", "f", ""]],
-    ["@((g(", ["(", "", "g"]],
-    ["@(f(g(", ["(", "f", "g"]],
-    ["@({(}({(}(", ["(", "{(}", "{(}"]],
+    ["@<<<", [EdgeKind.LeftArrow, "", ""]],
+    ["@ < f  o  o <\r\n\t<", [EdgeKind.LeftArrow, "f o o", ""]],
+    ["@<f<<", [EdgeKind.LeftArrow, "f", ""]],
+    ["@<<g<", [EdgeKind.LeftArrow, "", "g"]],
+    ["@<f<g<", [EdgeKind.LeftArrow, "f", "g"]],
+    ["@<{<}<{<}<", [EdgeKind.LeftArrow, "{<}", "{<}"]],
+    ["@(((", [EdgeKind.LeftArrow, "", ""]],
+    ["@ ( f  o  o (\r\n\t(", [EdgeKind.LeftArrow, "f o o", ""]],
+    ["@(f((", [EdgeKind.LeftArrow, "f", ""]],
+    ["@((g(", [EdgeKind.LeftArrow, "", "g"]],
+    ["@(f(g(", [EdgeKind.LeftArrow, "f", "g"]],
+    ["@({(}({(}(", [EdgeKind.LeftArrow, "{(}", "{(}"]],
   ])(
     "%O",
     quickCheck("left_arrow", (example) => `$\\begin{CD}A${example}B\\end{CD}$`),
@@ -188,18 +189,18 @@ describe("left_arrow", () => {
 
 describe("right_arrow", () => {
   describe.each([
-    ["@>>>", [">", "", ""]],
-    ["@ > f  o  o >\r\n\t>", [">", "f o o", ""]],
-    ["@>f>>", [">", "f", ""]],
-    ["@>>g>", [">", "", "g"]],
-    ["@>f>g>", [">", "f", "g"]],
-    ["@>{>}>{>}>", [">", "{>}", "{>}"]],
-    ["@)))", [")", "", ""]],
-    ["@ ) f  o  o )\r\n\t)", [")", "f o o", ""]],
-    ["@)f))", [")", "f", ""]],
-    ["@))g)", [")", "", "g"]],
-    ["@)f)g)", [")", "f", "g"]],
-    ["@){)}){)})", [")", "{)}", "{)}"]],
+    ["@>>>", [EdgeKind.RightArrow, "", ""]],
+    ["@ > f  o  o >\r\n\t>", [EdgeKind.RightArrow, "f o o", ""]],
+    ["@>f>>", [EdgeKind.RightArrow, "f", ""]],
+    ["@>>g>", [EdgeKind.RightArrow, "", "g"]],
+    ["@>f>g>", [EdgeKind.RightArrow, "f", "g"]],
+    ["@>{>}>{>}>", [EdgeKind.RightArrow, "{>}", "{>}"]],
+    ["@)))", [EdgeKind.RightArrow, "", ""]],
+    ["@ ) f  o  o )\r\n\t)", [EdgeKind.RightArrow, "f o o", ""]],
+    ["@)f))", [EdgeKind.RightArrow, "f", ""]],
+    ["@))g)", [EdgeKind.RightArrow, "", "g"]],
+    ["@)f)g)", [EdgeKind.RightArrow, "f", "g"]],
+    ["@){)}){)})", [EdgeKind.RightArrow, "{)}", "{)}"]],
   ])(
     "%O",
     quickCheck(
@@ -213,10 +214,10 @@ describe("right_arrow", () => {
 
 describe("horizontal_edge", () => {
   describe.each([
-    ["@.", ["."]],
-    ["@=", ["="]],
-    ["@<<<", ["<", "", ""]],
-    ["@>>>", [">", "", ""]],
+    ["@.", [EdgeKind.Empty]],
+    ["@=", [EdgeKind.HorizontalEquals]],
+    ["@<<<", [EdgeKind.LeftArrow, "", ""]],
+    ["@>>>", [EdgeKind.RightArrow, "", ""]],
   ])(
     "%O",
     quickCheck(
@@ -228,10 +229,10 @@ describe("horizontal_edge", () => {
 
 describe("vertical_edge", () => {
   describe.each([
-    ["@.", ["."]],
-    ["@|", ["|"]],
-    ["@AAA", ["A", "", ""]],
-    ["@VVV", ["V", "", ""]],
+    ["@.", [EdgeKind.Empty]],
+    ["@|", [EdgeKind.VerticalEquals]],
+    ["@AAA", [EdgeKind.UpArrow, "", ""]],
+    ["@VVV", [EdgeKind.DownArrow, "", ""]],
   ])(
     "%O",
     quickCheck(
@@ -244,8 +245,17 @@ describe("vertical_edge", () => {
 describe("odd_row", () => {
   describe.each([
     ["F", ["F"]],
-    ["F @>>> G", ["F", [">", "", ""], "G"]],
-    ["F @>>> G @>>> H", ["F", [">", "", ""], "G", [">", "", ""], "H"]],
+    ["F @>>> G", ["F", [EdgeKind.RightArrow, "", ""], "G"]],
+    [
+      "F @>>> G @>>> H",
+      [
+        "F",
+        [EdgeKind.RightArrow, "", ""],
+        "G",
+        [EdgeKind.RightArrow, "", ""],
+        "H",
+      ],
+    ],
   ])(
     "%O",
     quickCheck("odd_row", (example) => `$\\begin{CD}${example}\\end{CD}$`),
@@ -254,11 +264,20 @@ describe("odd_row", () => {
 
 describe("even_row", () => {
   describe.each([
-    ["@VVV", [["V", "", ""]]],
-    ["@VVV @VVV", [["V", "", ""], null, ["V", "", ""]]],
+    ["@VVV", [[EdgeKind.DownArrow, "", ""]]],
+    [
+      "@VVV @VVV",
+      [[EdgeKind.DownArrow, "", ""], null, [EdgeKind.DownArrow, "", ""]],
+    ],
     [
       "@VVV @VVV @VVV",
-      [["V", "", ""], null, ["V", "", ""], null, ["V", "", ""]],
+      [
+        [EdgeKind.DownArrow, "", ""],
+        null,
+        [EdgeKind.DownArrow, "", ""],
+        null,
+        [EdgeKind.DownArrow, "", ""],
+      ],
     ],
   ])(
     "%O",
@@ -269,29 +288,76 @@ describe("even_row", () => {
 describe("matrix", () => {
   describe.each([
     ["F", [["F"]]],
-    ["F @>>> G", [["F", [">", "", ""], "G"]]],
-    ["F @>>> G @>>> H", [["F", [">", "", ""], "G", [">", "", ""], "H"]]],
-    [`F \\\\\n @VVV \\\\\n G`, [["F"], [["V", "", ""]], ["G"]]],
+    ["F @>>> G", [["F", [EdgeKind.RightArrow, "", ""], "G"]]],
+    [
+      "F @>>> G @>>> H",
+      [
+        [
+          "F",
+          [EdgeKind.RightArrow, "", ""],
+          "G",
+          [EdgeKind.RightArrow, "", ""],
+          "H",
+        ],
+      ],
+    ],
+    [`F \\\\\n @VVV \\\\\n G`, [["F"], [[EdgeKind.DownArrow, "", ""]], ["G"]]],
     [
       "F \\\\\n @VVV \\\\\n G \\\\\n @VVV \\\\\n H",
-      [["F"], [["V", "", ""]], ["G"], [["V", "", ""]], ["H"]],
+      [
+        ["F"],
+        [[EdgeKind.DownArrow, "", ""]],
+        ["G"],
+        [[EdgeKind.DownArrow, "", ""]],
+        ["H"],
+      ],
     ],
     [
       "F @>>> G \\\\\n @VVV @VVV \\\\\n H @>>> I",
       [
-        ["F", [">", "", ""], "G"],
-        [["V", "", ""], null, ["V", "", ""]],
-        ["H", [">", "", ""], "I"],
+        ["F", [EdgeKind.RightArrow, "", ""], "G"],
+        [[EdgeKind.DownArrow, "", ""], null, [EdgeKind.DownArrow, "", ""]],
+        ["H", [EdgeKind.RightArrow, "", ""], "I"],
       ],
     ],
     [
       "F @>>> G @>>> H \\\\\n @VVV @VVV @VVV \\\\\n I @>>> J @>>> K \\\\\n @VVV @VVV @VVV \\\\\n L @>>> M @>>> N",
       [
-        ["F", [">", "", ""], "G", [">", "", ""], "H"],
-        [["V", "", ""], null, ["V", "", ""], null, ["V", "", ""]],
-        ["I", [">", "", ""], "J", [">", "", ""], "K"],
-        [["V", "", ""], null, ["V", "", ""], null, ["V", "", ""]],
-        ["L", [">", "", ""], "M", [">", "", ""], "N"],
+        [
+          "F",
+          [EdgeKind.RightArrow, "", ""],
+          "G",
+          [EdgeKind.RightArrow, "", ""],
+          "H",
+        ],
+        [
+          [EdgeKind.DownArrow, "", ""],
+          null,
+          [EdgeKind.DownArrow, "", ""],
+          null,
+          [EdgeKind.DownArrow, "", ""],
+        ],
+        [
+          "I",
+          [EdgeKind.RightArrow, "", ""],
+          "J",
+          [EdgeKind.RightArrow, "", ""],
+          "K",
+        ],
+        [
+          [EdgeKind.DownArrow, "", ""],
+          null,
+          [EdgeKind.DownArrow, "", ""],
+          null,
+          [EdgeKind.DownArrow, "", ""],
+        ],
+        [
+          "L",
+          [EdgeKind.RightArrow, "", ""],
+          "M",
+          [EdgeKind.RightArrow, "", ""],
+          "N",
+        ],
       ],
     ],
   ])(
@@ -311,9 +377,17 @@ S^{{\\mathcal{W}}_\\Lambda}\\otimes T @>j>> T\\\\
 (S\\otimes T)/I @= (Z\\otimes T)/J
 \\end{CD}`,
       [
-        ["S^{{\\mathcal{W}}_\\Lambda}\\otimes T", [">", "j", ""], "T"],
-        [["V", "", ""], null, ["V", "", "{\\End P}"]],
-        ["(S\\otimes T)/I", ["="], "(Z\\otimes T)/J"],
+        [
+          "S^{{\\mathcal{W}}_\\Lambda}\\otimes T",
+          [EdgeKind.RightArrow, "j", ""],
+          "T",
+        ],
+        [
+          [EdgeKind.DownArrow, "", ""],
+          null,
+          [EdgeKind.DownArrow, "", "{\\End P}"],
+        ],
+        ["(S\\otimes T)/I", [EdgeKind.HorizontalEquals], "(Z\\otimes T)/J"],
       ],
     ],
     [
@@ -327,29 +401,29 @@ S^{{\\mathcal{W}}_\\Lambda}\\otimes T @>j>> T\\\\
       [
         [
           "\\cov(\\mathcal{L})",
-          [">", "", ""],
+          [EdgeKind.RightArrow, "", ""],
           "\\non(\\mathcal{K})",
-          [">", "", ""],
+          [EdgeKind.RightArrow, "", ""],
           "\\cf(\\mathcal{K})",
-          [">", "", ""],
+          [EdgeKind.RightArrow, "", ""],
           "\\cf(\\mathcal{L})",
         ],
         [
-          ["V", "", ""],
+          [EdgeKind.DownArrow, "", ""],
           null,
-          ["A", "", ""],
+          [EdgeKind.UpArrow, "", ""],
           null,
-          ["A", "", ""],
+          [EdgeKind.UpArrow, "", ""],
           null,
-          ["V", "", ""],
+          [EdgeKind.DownArrow, "", ""],
         ],
         [
           "\\add(\\mathcal{L})",
-          [">", "", ""],
+          [EdgeKind.RightArrow, "", ""],
           "\\add(\\mathcal{K})",
-          [">", "", ""],
+          [EdgeKind.RightArrow, "", ""],
           "\\cov(\\mathcal{K})",
-          [">", "", ""],
+          [EdgeKind.RightArrow, "", ""],
           "\\non(\\mathcal{L})",
         ],
       ],

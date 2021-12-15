@@ -24,6 +24,24 @@ const deepJoin = function(data : any[] | string) : string {
 const squish = function(input : string) : string {
   return input.trim().replace(/\s+/g, ' ')
 }
+
+import { EdgeKind } from "./schema"
+
+const sepToEdgeKind = function(input : string) : EdgeKind | undefined {
+  return {
+    ".": EdgeKind.Empty,
+    "=": EdgeKind.HorizontalEquals,
+    "|": EdgeKind.VerticalEquals,
+    "\\vert": EdgeKind.VerticalEquals,
+    "A": EdgeKind.UpArrow,
+    "V": EdgeKind.DownArrow,
+    "<": EdgeKind.LeftArrow,
+    "(": EdgeKind.LeftArrow,
+    ">": EdgeKind.RightArrow,
+    ")": EdgeKind.RightArrow,
+  }[input]
+}
+
 %}
 
 #==[ Basics ]===================================================================
@@ -36,7 +54,7 @@ label -> grp[[^{}@], label] {% (d) => deepJoin(d) %}
 #==[ Arrows ]===================================================================
 
 unlabeled_arrow[SEP] -> "@" _ $SEP
-  {% (d) => [d[2][0]] %}
+  {% (d) => [sepToEdgeKind(d[2][0])] %}
 
 empty_arrow       -> unlabeled_arrow["."]      {% id %}
 horizontal_equals -> unlabeled_arrow["="]      {% id %}
@@ -44,7 +62,7 @@ vertical_equals   -> unlabeled_arrow["|"]      {% id %}
                    | unlabeled_arrow["\\vert"] {% id %}
 
 labeled_arrow[SEP, LAB] -> "@" _ $SEP $LAB:? $SEP $LAB:? $SEP
-  {% (d) => [d[2][0], squish(deepJoin(d[3])), squish(deepJoin(d[5]))] %}
+  {% (d) => [sepToEdgeKind(d[2][0]), squish(deepJoin(d[3])), squish(deepJoin(d[5]))] %}
 
 up_arrow    -> labeled_arrow["A", grp[[^{}@A], label]] {% id %}
 down_arrow  -> labeled_arrow["V", grp[[^{}@V], label]] {% id %}
