@@ -101,56 +101,56 @@ test("Chichon's diagram", () => {
         label: {
           content: "\\cov(\\mathcal{L})",
         },
-        place: [0, 0, 0],
+        place: [0, 0],
       },
       {
         id: 1,
         label: {
           content: "\\non(\\mathcal{K})",
         },
-        place: [0, 1, 0],
+        place: [1, 0],
       },
       {
         id: 2,
         label: {
           content: "\\cf(\\mathcal{K})",
         },
-        place: [0, 2, 0],
+        place: [2, 0],
       },
       {
         id: 3,
         label: {
           content: "\\cf(\\mathcal{L})",
         },
-        place: [0, 3, 0],
+        place: [3, 0],
       },
       {
         id: 4,
         label: {
           content: "\\add(\\mathcal{L})",
         },
-        place: [0, 0, 1],
+        place: [0, 1],
       },
       {
         id: 5,
         label: {
           content: "\\add(\\mathcal{K})",
         },
-        place: [0, 1, 1],
+        place: [1, 1],
       },
       {
         id: 6,
         label: {
           content: "\\cov(\\mathcal{K})",
         },
-        place: [0, 2, 1],
+        place: [2, 1],
       },
       {
         id: 7,
         label: {
           content: "\\non(\\mathcal{L})",
         },
-        place: [0, 3, 1],
+        place: [3, 1],
       },
     ],
   });

@@ -13,11 +13,29 @@ const injectVertex = (
 ): Infer<typeof U.Vertex> => {
   return {
     id: id(i, j, width),
-    place: [0, j / 2, i / 2],
+    place: [j / 2, i / 2],
     label: {
       content: cel,
     },
   };
+};
+
+const injectLabels = (
+  kind: S.EdgeKind,
+  tlLab: string,
+  brLab: string,
+): Infer<typeof U.EdgeLabel>[] => {
+  const flip = [S.EdgeKind.RightArrow, S.EdgeKind.UpArrow].includes(kind);
+  return [
+    {
+      content: tlLab,
+      alignment: flip ? "left" : "right",
+    },
+    {
+      content: brLab,
+      alignment: flip ? "right" : "left",
+    },
+  ].filter(({ content }) => content);
 };
 
 const injectHorizontalEdge = (
@@ -32,7 +50,7 @@ const injectHorizontalEdge = (
     id: 0, // temporary
     source: id(i, j - 1 * flip, width),
     target: id(i, j + 1 * flip, width),
-    labels: [], // TODO
+    labels: injectLabels(kind, tlLab || "", brLab || ""),
   };
 };
 
@@ -48,7 +66,7 @@ const injectVerticalEdge = (
     id: 0, // temporary
     source: id(i - 1 * flip, j, width),
     target: id(i + 1 * flip, j, width),
-    labels: [], // TODO
+    labels: injectLabels(kind, tlLab || "", brLab || ""),
   };
 };
 

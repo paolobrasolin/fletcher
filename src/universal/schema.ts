@@ -1,13 +1,15 @@
-import { array, string, object, number, any } from "superstruct";
+import { array, string, object, number, any, enums } from "superstruct";
 
 export const Id = number();
 
-const Label = object({
+const VertexLabel = object({
   content: string(),
 });
 
-const VertexLabel = Label;
-const EdgeLabel = Label;
+export const EdgeLabel = object({
+  content: string(),
+  alignment: enums(["left", "right"]),
+});
 
 export const Vertex = object({
   id: Id,
