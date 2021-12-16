@@ -1,106 +1,160 @@
-import { read } from ".";
+import { read, write } from ".";
+import * as U from "../universal/schema";
 
-test("kitchen sink", () => {
-  expect(
-    read(`\\begin{CD}
-A       @>f>x>  B       @=  C   \\\\
-@AiAtA          @VyVgV      @|  \\\\
-D       @<z<h<  E       @.  F
-\\end{CD}`),
-  ).toEqual({
-    edges: [
-      {
-        id: 0,
-        labels: [
-          { content: "f", alignment: "left" },
-          { content: "x", alignment: "right" },
-        ],
-        source: 0,
-        target: 1,
-      },
-      {
-        id: 1,
-        labels: [],
-        source: 1,
-        target: 2,
-      },
-      {
-        id: 2,
-        labels: [
-          { content: "i", alignment: "left" },
-          { content: "t", alignment: "right" },
-        ],
-        source: 3,
-        target: 0,
-      },
-      {
-        id: 3,
-        labels: [
-          { content: "y", alignment: "right" },
-          { content: "g", alignment: "left" },
-        ],
-        source: 1,
-        target: 4,
-      },
-      {
-        id: 4,
-        labels: [],
-        source: 2,
-        target: 5,
-      },
-      {
-        id: 5,
-        labels: [
-          { content: "z", alignment: "right" },
-          { content: "h", alignment: "left" },
-        ],
-        source: 4,
-        target: 3,
-      },
-    ],
-    vertices: [
-      {
-        id: 0,
-        label: {
-          content: "A",
+describe.each([
+  [
+    "kitchen sink w/ labeled arrows",
+    `\\begin{CD}
+A       @>f>x>  B       \\\\
+@AiAtA          @VyVgV  \\\\
+C       @<z<h<  D
+\\end{CD}`,
+    {
+      edges: [
+        {
+          id: 0,
+          labels: [
+            { alignment: "left", content: "f" },
+            { alignment: "right", content: "x" },
+          ],
+          source: 0,
+          target: 1,
+          style: {
+            body: U.Bodies.Solid,
+            head: U.Heads.Arrow,
+            level: 1,
+            tail: U.Tails.Empty,
+          },
         },
-        place: [0, 0],
-      },
-      {
-        id: 1,
-        label: {
-          content: "B",
+        {
+          id: 1,
+          labels: [
+            { alignment: "left", content: "i" },
+            { alignment: "right", content: "t" },
+          ],
+          source: 2,
+          target: 0,
+          style: {
+            body: U.Bodies.Solid,
+            head: U.Heads.Arrow,
+            level: 1,
+            tail: U.Tails.Empty,
+          },
         },
-        place: [1, 0],
-      },
-      {
-        id: 2,
-        label: {
-          content: "C",
+        {
+          id: 2,
+          labels: [
+            { alignment: "right", content: "y" },
+            { alignment: "left", content: "g" },
+          ],
+          source: 1,
+          target: 3,
+          style: {
+            body: U.Bodies.Solid,
+            head: U.Heads.Arrow,
+            level: 1,
+            tail: U.Tails.Empty,
+          },
         },
-        place: [2, 0],
-      },
-      {
-        id: 3,
-        label: {
-          content: "D",
+        {
+          id: 3,
+          labels: [
+            { alignment: "right", content: "z" },
+            { alignment: "left", content: "h" },
+          ],
+          source: 3,
+          target: 2,
+          style: {
+            body: U.Bodies.Solid,
+            head: U.Heads.Arrow,
+            level: 1,
+            tail: U.Tails.Empty,
+          },
         },
-        place: [0, 1],
-      },
-      {
-        id: 4,
-        label: {
-          content: "E",
+      ],
+      vertices: [
+        {
+          id: 0,
+          label: { content: "A" },
+          place: [0, 0],
         },
-        place: [1, 1],
-      },
-      {
-        id: 5,
-        label: {
-          content: "F",
+        {
+          id: 1,
+          label: { content: "B" },
+          place: [1, 0],
         },
-        place: [2, 1],
-      },
-    ],
-  });
+        {
+          id: 2,
+          label: { content: "C" },
+          place: [0, 1],
+        },
+        {
+          id: 3,
+          label: { content: "D" },
+          place: [1, 1],
+        },
+      ],
+    },
+  ],
+  [
+    "kitchen sink w/ unlabeled arrows",
+    `\\begin{CD}
+A   @=  B   \\\\
+@|      @.  \\\\
+C   @.  D
+\\end{CD}`,
+    {
+      edges: [
+        {
+          id: 0,
+          labels: [],
+          source: 0,
+          target: 1,
+          style: {
+            body: U.Bodies.Solid,
+            head: U.Heads.Empty,
+            level: 2,
+            tail: U.Tails.Empty,
+          },
+        },
+        {
+          id: 1,
+          labels: [],
+          source: 0,
+          target: 2,
+          style: {
+            body: U.Bodies.Solid,
+            head: U.Heads.Empty,
+            level: 2,
+            tail: U.Tails.Empty,
+          },
+        },
+      ],
+      vertices: [
+        {
+          id: 0,
+          label: { content: "A" },
+          place: [0, 0],
+        },
+        {
+          id: 1,
+          label: { content: "B" },
+          place: [1, 0],
+        },
+        {
+          id: 2,
+          label: { content: "C" },
+          place: [0, 1],
+        },
+        {
+          id: 3,
+          label: { content: "D" },
+          place: [1, 1],
+        },
+      ],
+    },
+  ],
+])("%s", (_, sourcecode, representation) => {
+  test("read", () => expect(read(sourcecode)).toEqual(representation));
+  test("write", () => expect(write(representation)).toEqual(sourcecode));
 });

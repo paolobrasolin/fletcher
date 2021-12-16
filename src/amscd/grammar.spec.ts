@@ -23,13 +23,13 @@ const parse = function (chunk: string, start?: string) {
 
 const TMP_PATH = path.join(process.cwd(), ".tests");
 
-beforeAll(() => {
-  return fs.mkdirSync(TMP_PATH);
-});
+// beforeAll(() => {
+//   return fs.mkdirSync(TMP_PATH);
+// });
 
-afterAll(() => {
-  return fs.rmSync(TMP_PATH, { recursive: true, force: true });
-});
+// afterAll(() => {
+//   return fs.rmSync(TMP_PATH, { recursive: true, force: true });
+// });
 
 const TEMPLATE = (body: string): string => `
 \\documentclass{standalone}

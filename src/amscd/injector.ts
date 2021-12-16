@@ -38,6 +38,33 @@ const injectLabels = (
   ].filter(({ content }) => content);
 };
 
+const injectStyle = (kind: S.EdgeKind): Infer<typeof U.EdgeStyle> => {
+  if ([S.EdgeKind.Empty].includes(kind)) {
+    return {
+      head: U.Heads.Empty,
+      body: U.Bodies.Empty,
+      tail: U.Tails.Empty,
+      level: 1,
+    };
+  } else if (
+    [S.EdgeKind.VerticalEquals, S.EdgeKind.HorizontalEquals].includes(kind)
+  ) {
+    return {
+      head: U.Heads.Empty,
+      body: U.Bodies.Solid,
+      tail: U.Tails.Empty,
+      level: 2,
+    };
+  } else {
+    return {
+      head: U.Heads.Arrow,
+      body: U.Bodies.Solid,
+      tail: U.Tails.Empty,
+      level: 1,
+    };
+  }
+};
+
 const injectHorizontalEdge = (
   [kind, tlLab, brLab]: Infer<typeof S.HorizontalEdge>,
   i: number,
@@ -51,6 +78,7 @@ const injectHorizontalEdge = (
     source: id(i, j - 1 * flip, width),
     target: id(i, j + 1 * flip, width),
     labels: injectLabels(kind, tlLab || "", brLab || ""),
+    style: injectStyle(kind),
   };
 };
 
@@ -67,6 +95,7 @@ const injectVerticalEdge = (
     source: id(i - 1 * flip, j, width),
     target: id(i + 1 * flip, j, width),
     labels: injectLabels(kind, tlLab || "", brLab || ""),
+    style: injectStyle(kind),
   };
 };
 

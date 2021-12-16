@@ -1,4 +1,13 @@
-import { array, string, object, number, any, enums } from "superstruct";
+import {
+  any,
+  array,
+  defaulted,
+  enums,
+  number,
+  object,
+  string,
+  min,
+} from "superstruct";
 
 export const Id = number();
 
@@ -17,11 +26,40 @@ export const Vertex = object({
   label: VertexLabel,
 });
 
+export enum Heads {
+  Empty,
+  Arrow,
+}
+
+export const Head = enums([Heads.Empty, Heads.Arrow]);
+
+export enum Bodies {
+  Empty,
+  Solid,
+}
+
+export const Body = enums([Bodies.Empty, Bodies.Solid]);
+
+export enum Tails {
+  Empty,
+  Arrow,
+}
+
+export const Tail = enums([Tails.Empty, Tails.Arrow]);
+
+export const EdgeStyle = object({
+  head: defaulted(Head, Heads.Arrow),
+  body: defaulted(Body, Bodies.Solid),
+  tail: defaulted(Tail, Tails.Empty),
+  level: defaulted(min(number(), 1), 1),
+});
+
 export const Edge = object({
   id: Id,
   source: Id,
   target: Id,
   labels: array(EdgeLabel),
+  style: EdgeStyle,
 });
 
 export const Diagram = object({

@@ -9,13 +9,14 @@ import {
 } from "superstruct";
 
 export enum EdgeKind {
-  Empty,
-  HorizontalEquals,
-  VerticalEquals,
-  UpArrow,
-  DownArrow,
-  LeftArrow,
-  RightArrow,
+  // NOTE: using strings is kinda dirty, but it really helps w/ (de)serialization
+  Empty = ".",
+  HorizontalEquals = "=",
+  VerticalEquals = "|",
+  UpArrow = "A",
+  DownArrow = "V",
+  LeftArrow = "<",
+  RightArrow = ">",
 }
 
 export const Vertex = string();
@@ -42,8 +43,10 @@ export const VerticalEdge = tuple([
   optional(string()),
 ]);
 
+export const Edge = union([HorizontalEdge, VerticalEdge]);
+
 export const Blank = literal(null);
 
-export const Cell = union([Vertex, HorizontalEdge, VerticalEdge, Blank]);
+export const Cell = union([Vertex, Edge, Blank]);
 
 export const Matrix = array(array(Cell));

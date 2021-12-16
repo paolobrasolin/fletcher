@@ -1,6 +1,8 @@
 import { Matrix } from "./schema";
 import * as U from "../universal/schema";
-import { inject } from "./interpreter";
+import { inject } from "./injector";
+import { project } from "./projector";
+import { render } from "./renderer";
 import { Infer } from "superstruct";
 
 import * as nearley from "nearley";
@@ -22,13 +24,13 @@ const parse = function (chunk: string): Infer<typeof Matrix> {
 
 export function read(input: string): Infer<typeof U.Diagram> {
   const parsed = parse(input);
-  // TODO: validation?
+  // TODO: validation/coercion?
   const injected = inject(parsed);
   return injected;
 }
 
-// export function write(input: Infer<typeof U.Diagram>): string {
-//   const projected = project(input);
-//   const rendered = render(projected);
-//   return rendered;
-// }
+export function write(input: Infer<typeof U.Diagram>): string {
+  const projected = project(input);
+  const rendered = render(projected);
+  return rendered;
+}
