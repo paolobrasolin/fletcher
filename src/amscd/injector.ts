@@ -2,15 +2,16 @@ import { Infer, assert } from "superstruct";
 import * as S from "./schema";
 import * as U from "../universal/schema";
 
-const id = (i: number, j: number, width: number): Infer<typeof U.Id> =>
-  j / 2 + (i / 2) * width;
+function id(i: number, j: number, width: number): Infer<typeof U.Id> {
+  return j / 2 + (i / 2) * width;
+}
 
-const injectVertex = (
+function injectVertex(
   cel: Infer<typeof S.Vertex>,
   i: number,
   j: number,
   width: number,
-): Infer<typeof U.Vertex> => {
+): Infer<typeof U.Vertex> {
   return {
     id: id(i, j, width),
     place: [j / 2, i / 2],
@@ -18,13 +19,13 @@ const injectVertex = (
       content: cel,
     },
   };
-};
+}
 
-const injectLabels = (
+function injectLabels(
   kind: S.EdgeKind,
   tlLab: string,
   brLab: string,
-): Infer<typeof U.EdgeLabel>[] => {
+): Infer<typeof U.EdgeLabel>[] {
   const flip = [S.EdgeKind.RightArrow, S.EdgeKind.UpArrow].includes(kind);
   return [
     {
@@ -36,10 +37,10 @@ const injectLabels = (
       alignment: flip ? "right" : "left",
     },
   ].filter(({ content }) => content);
-};
+}
 
-const injectStyle = (kind: S.EdgeKind): Infer<typeof U.EdgeStyle> => {
-  if ([S.EdgeKind.Empty].includes(kind)) {
+function injectStyle(kind: S.EdgeKind): Infer<typeof U.EdgeStyle> {
+  if (S.EdgeKind.Empty == kind) {
     return {
       head: U.Heads.Empty,
       body: U.Bodies.Empty,
@@ -63,14 +64,14 @@ const injectStyle = (kind: S.EdgeKind): Infer<typeof U.EdgeStyle> => {
       level: 1,
     };
   }
-};
+}
 
-const injectHorizontalEdge = (
+function injectHorizontalEdge(
   [kind, tlLab, brLab]: Infer<typeof S.HorizontalEdge>,
   i: number,
   j: number,
   width: number,
-): Infer<typeof U.Edge> | undefined => {
+): Infer<typeof U.Edge> | undefined {
   if (S.EdgeKind.Empty == kind) return;
   const flip = S.EdgeKind.LeftArrow == kind ? -1 : 1;
   return {
@@ -80,14 +81,14 @@ const injectHorizontalEdge = (
     labels: injectLabels(kind, tlLab || "", brLab || ""),
     style: injectStyle(kind),
   };
-};
+}
 
-const injectVerticalEdge = (
+function injectVerticalEdge(
   [kind, tlLab, brLab]: Infer<typeof S.VerticalEdge>,
   i: number,
   j: number,
   width: number,
-): Infer<typeof U.Edge> | undefined => {
+): Infer<typeof U.Edge> | undefined {
   if (S.EdgeKind.Empty == kind) return;
   const flip = S.EdgeKind.UpArrow == kind ? -1 : 1;
   return {
@@ -97,7 +98,7 @@ const injectVerticalEdge = (
     labels: injectLabels(kind, tlLab || "", brLab || ""),
     style: injectStyle(kind),
   };
-};
+}
 
 export function inject(input: Infer<typeof S.Matrix>): Infer<typeof U.Diagram> {
   const vertices: Infer<typeof U.Vertex>[] = [];
@@ -131,6 +132,7 @@ export function inject(input: Infer<typeof S.Matrix>): Infer<typeof U.Diagram> {
     });
   });
 
+  // Indices are easier to generate a posteriori.
   edges.forEach((edge, index) => {
     edge.id = index;
   });

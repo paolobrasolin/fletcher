@@ -1,35 +1,36 @@
-import { inject } from "./injector";
-import { EdgeKind } from "./schema";
 import * as U from "../universal/schema";
+import * as S from "./schema";
+
+import { inject } from "./injector";
 
 test("Chichon's diagram", () => {
   expect(
     inject([
       [
         "\\cov(\\mathcal{L})",
-        [EdgeKind.RightArrow, "", ""],
+        [S.EdgeKind.RightArrow, "", ""],
         "\\non(\\mathcal{K})",
-        [EdgeKind.RightArrow, "", ""],
+        [S.EdgeKind.RightArrow, "", ""],
         "\\cf(\\mathcal{K})",
-        [EdgeKind.RightArrow, "", ""],
+        [S.EdgeKind.RightArrow, "", ""],
         "\\cf(\\mathcal{L})",
       ],
       [
-        [EdgeKind.DownArrow, "", ""],
+        [S.EdgeKind.DownArrow, "", ""],
         null,
-        [EdgeKind.UpArrow, "", ""],
+        [S.EdgeKind.UpArrow, "", ""],
         null,
-        [EdgeKind.UpArrow, "", ""],
+        [S.EdgeKind.UpArrow, "", ""],
         null,
-        [EdgeKind.DownArrow, "", ""],
+        [S.EdgeKind.DownArrow, "", ""],
       ],
       [
         "\\add(\\mathcal{L})",
-        [EdgeKind.RightArrow, "", ""],
+        [S.EdgeKind.RightArrow, "", ""],
         "\\add(\\mathcal{K})",
-        [EdgeKind.RightArrow, "", ""],
+        [S.EdgeKind.RightArrow, "", ""],
         "\\cov(\\mathcal{K})",
-        [EdgeKind.RightArrow, "", ""],
+        [S.EdgeKind.RightArrow, "", ""],
         "\\non(\\mathcal{L})",
       ],
     ]),
