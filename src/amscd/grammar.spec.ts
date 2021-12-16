@@ -8,6 +8,7 @@ import * as nearley from "nearley";
 
 import grammar from "./grammar";
 import { EdgeKind } from "./schema";
+import { any, Infer } from "superstruct";
 
 //=[ Parsing ]==================================================================
 
@@ -61,7 +62,7 @@ const compile = (body: string, template = TEMPLATE) => {
 
 const quickCheck =
   (start: string, context?: (example: string) => string) =>
-  (input: string, output: any) => {
+  (input: string, output: unknown) => {
     const result = parse(input, start);
     test("it parses unabiguously", () => expect(result).toHaveLength(1));
     test(format("it parses to %O", output), () =>

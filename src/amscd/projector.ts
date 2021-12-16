@@ -17,7 +17,7 @@ export function project({
     matrix[place[1] * 2][place[0] * 2] ??= content;
   });
   edges.forEach(
-    ({ id, source, target, labels, style: { head, body, tail, level } }) => {
+    ({ source, target, labels, style: { head, body, tail, level } }) => {
       const [sx, sy] = places[source];
       const [tx, ty] = places[target];
       const dx = tx - sx;
