@@ -11,9 +11,22 @@ function injectVertex(
     place: [x, y], // TODO: handle generic layout
     label: {
       content: label || "",
-      // colour: colour,
     },
   };
+}
+
+function injectLabels(
+  label: string | undefined,
+  alignment: Infer<typeof S.Alignment> | undefined,
+  options: Infer<typeof S.EdgeOptions> | undefined,
+): Infer<typeof U.EdgeLabel>[] {
+  if (!label) return [];
+  return [
+    {
+      content: label,
+      alignment: "foo",
+    },
+  ];
 }
 
 function injectEdge(
@@ -33,14 +46,13 @@ function injectEdge(
     //   // shorten,
     //   style: options?.style, // TODO
     // },
-    labels: [
-      {
-        content: label || "",
-        // alignment: alignment,
-        // position: options?.label_position,
-        // colour: options?.colour,
-      },
-    ],
+    style: {
+      body: U.Bodies.Solid,
+      head: U.Heads.Arrow,
+      level: 1,
+      tail: U.Tails.Empty,
+    },
+    labels: injectLabels(label, alignment, options),
   };
 }
 
