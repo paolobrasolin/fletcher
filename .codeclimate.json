@@ -1,9 +1,4 @@
 {
   "version": "2",
-  "exclude_patterns": [
-    "**/*.d.ts",
-    "**/*.spec.ts",
-    "**/grammars/*.ts",
-    "**/grammar.ts"
-  ]
+  "exclude_patterns": ["**/*.d.ts", "**/*.spec.ts", "**/grammar.ts"]
 }

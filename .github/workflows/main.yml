@@ -33,7 +33,7 @@ jobs:
       - name: Check generated grammars freshness
         run: |
           npm run grammars
-          git diff --exit-code src/grammars/
+          git diff --exit-code src/
 
       - name: Check code style
         run: npm run style:check
