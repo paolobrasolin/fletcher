@@ -60,3 +60,49 @@ There are many roads to implementation, but we can fix two constraints:
 [typescript-url]: https://www.typescriptlang.org/
 [js-parsing-url]: https://tomassetti.me/parsing-in-javascript/
 [nearley-url]: https://nearley.js.org/
+
+## Architectural guidelines
+
+Each DSL has a dedicated folder containing a few components.
+
+This is also true for our Universal Language, UL from now on.
+
+- **`schema`** describes the AST with some `Struct`s implemented with `superstruct`.
+
+  - It accounts for all optional fragments via `optional`.
+    This allows to validating anything which is valid for the original processor, however minimal.
+  - It accounts for all implicit defaults via `defaulted`.
+    This allows the schema to be the single source of truth about the defaults, and consumers of the AST will trust coercion to make them explicit so they need no knowledge of them.
+  - `defaulted`s should be on children `Struct`s, while `optional`s should be on the parent `Struct`s.
+    This allows `assert`s to be a simple way (after coercion) to get rid of the `... | undefined` from the signatures of `optional` parts when processing the AST.
+  - _This is the only component of the UL._ Right now there's no need for it to be a public API, and we use it just for internal representation.
+    TODO: everything is optional apart from topology
+
+- **`grammar`** is an optional `nearley` grammar which might be used by the `parser`.
+
+  - It should not be ambiguous.
+
+- **`parser`** implements a `parse` function to transform sourcecode into an AST.
+
+  - `parse` is responsible to perform any extra necessary decoding/deserialization on the input.
+  - `parse` outputs a bona fide object respecting `schema`, meaning that the signatures are correct but no explicit validation (and especially no coercion) is done at this time.
+  - `parse` outputs an array to account for ambiguity and simplify testing, but it should only contain a single object as we ban ambiguous grammars.
+
+- **`injector`** implements an `inject` function mapping the DSL AST into the UL AST.
+
+  - `inject` must assume scheme coercion has been done, so it can have no knowledge of the DSL defaults and can simply perform a few `assert`s to check for presence.
+  - `inject` must output all and only the characteristics present in the input, regardless of the defaults of the UL schema (if any) -- in other terms, no assumptions on the UL default must be made.
+    This allows specific testing and avoids the need for backtracking when adding new features to the UL.
+
+- **`projector`** implements a `project` function mapping the UL AST onto the DSL AST.
+
+  - `project` makes no assumpion about scheme coercion, and it maps only features available in the target DSL.
+  - **TODO**: decide a reasonable policy for features which can only be _approximated_.
+
+- **`renderer`** implements a `render` function to transform an AST to sourcecode.
+
+  - **TODO**: perhaps `render` should include a minification process to produce the minimal code leveraging implicit defaults of the DSL.
+
+- **`index`** ties together all the components.
+  - It implements `read = inject ∘ coerce ∘ parse`, which translates DSL source into its representation in universal language.
+  - It implements `write = render ∘ project ∘ coerce`, which translates a univesal language representation into DSL source.
