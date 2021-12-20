@@ -59,15 +59,14 @@ export const Level = max(min(integer(), 1), 3);
 export const Natural = min(integer(), 0);
 export const Percent = max(min(integer(), 0), 100);
 export const Version = literal(0);
+export const Label = defaulted(string(), "");
 
 //=[ Composite ]================================================================
 
-export const Colour = tuple([
-  Angle,
-  Percent,
-  Percent,
-  defaulted(optional(Factor), 1),
-]);
+export const Colour = defaulted(
+  tuple([Angle, Percent, Percent, defaulted(optional(Factor), 1)]),
+  [0, 0, 0, 1],
+);
 
 export const Shorten = refine(
   object({
@@ -125,7 +124,7 @@ export const EdgeStyle = partial(
 
 export const EdgeOptions = partial(
   object({
-    colour: defaulted(Colour, [0, 0, 0, 1]),
+    colour: Colour,
     curve: defaulted(integer(), 0),
     label_position: defaulted(Percent, 50),
     length: Percent, // TODO: mark as deprecated
@@ -142,10 +141,10 @@ export function edge(self = -1, max = Infinity) {
     tuple([
       refine(Natural, "Source", (n) => n != self && n <= max),
       refine(Natural, "Target", (n) => n != self && n <= max),
-      defaulted(optional(string()), ""),
+      optional(Label),
       defaulted(optional(Alignment), 0),
       defaulted(optional(EdgeOptions), {}),
-      defaulted(optional(Colour), [0, 0, 0]),
+      optional(Colour),
     ]),
     "Edge",
     ([source, target]) => source != target,
@@ -157,8 +156,8 @@ export function edge(self = -1, max = Infinity) {
 export const Vertex = tuple([
   integer(),
   integer(),
-  defaulted(optional(string()), ""),
-  defaulted(optional(Colour), [0, 0, 0]),
+  optional(Label),
+  optional(Colour),
 ]);
 
 //=[ Main ]=====================================================================

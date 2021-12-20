@@ -3,21 +3,22 @@ import {
   array,
   defaulted,
   enums,
+  min,
   number,
   object,
+  optional,
+  partial,
   string,
-  min,
 } from "superstruct";
+
+//=[ Common ]===================================================================
 
 export const Id = number();
 
+//=[ Vertex ]===================================================================
+
 const VertexLabel = object({
   content: string(),
-});
-
-export const EdgeLabel = object({
-  content: string(),
-  alignment: enums(["left", "right"]),
 });
 
 export const Vertex = object({
@@ -26,41 +27,70 @@ export const Vertex = object({
   label: VertexLabel,
 });
 
+//=[ Edge ]=====================================================================
+
+export enum Alignments {
+  Left,
+  Right,
+}
+
+export const Alignment = defaulted(
+  enums([Alignments.Left, Alignments.Right]),
+  Alignments.Left,
+);
+
+export const EdgeLabel = object({
+  content: string(),
+  alignment: optional(Alignment),
+});
+
 export enum Heads {
   Empty,
   Arrow,
 }
 
-export const Head = enums([Heads.Empty, Heads.Arrow]);
+export const Head = defaulted(enums([Heads.Empty, Heads.Arrow]), Heads.Arrow);
 
 export enum Bodies {
   Empty,
   Solid,
 }
 
-export const Body = enums([Bodies.Empty, Bodies.Solid]);
+export const Body = defaulted(
+  enums([Bodies.Empty, Bodies.Solid]),
+  Bodies.Solid,
+);
 
 export enum Tails {
   Empty,
   Arrow,
 }
 
-export const Tail = enums([Tails.Empty, Tails.Arrow]);
+export const Tail = defaulted(enums([Tails.Empty, Tails.Arrow]), Tails.Empty);
 
-export const EdgeStyle = object({
-  head: defaulted(Head, Heads.Arrow),
-  body: defaulted(Body, Bodies.Solid),
-  tail: defaulted(Tail, Tails.Empty),
-  level: defaulted(min(number(), 1), 1),
-});
+export const Level = defaulted(min(number(), 1), 1);
+
+export const EdgeStyle = defaulted(
+  partial(
+    object({
+      head: Head,
+      body: Body,
+      tail: Tail,
+      level: Level,
+    }),
+  ),
+  {},
+);
 
 export const Edge = object({
   id: Id,
   source: Id,
   target: Id,
-  labels: array(EdgeLabel),
-  style: EdgeStyle,
+  labels: optional(array(EdgeLabel)),
+  style: optional(EdgeStyle),
 });
+
+//=[ Diagram ]==================================================================
 
 export const Diagram = object({
   vertices: array(Vertex),

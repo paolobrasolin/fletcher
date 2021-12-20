@@ -15,62 +15,38 @@ C       @<z<h<  D
         {
           id: 0,
           labels: [
-            { alignment: "left", content: "f" },
-            { alignment: "right", content: "x" },
+            { alignment: U.Alignments.Left, content: "f" },
+            { alignment: U.Alignments.Right, content: "x" },
           ],
           source: 0,
           target: 1,
-          style: {
-            body: U.Bodies.Solid,
-            head: U.Heads.Arrow,
-            level: 1,
-            tail: U.Tails.Empty,
-          },
         },
         {
           id: 1,
           labels: [
-            { alignment: "left", content: "i" },
-            { alignment: "right", content: "t" },
+            { alignment: U.Alignments.Left, content: "i" },
+            { alignment: U.Alignments.Right, content: "t" },
           ],
           source: 2,
           target: 0,
-          style: {
-            body: U.Bodies.Solid,
-            head: U.Heads.Arrow,
-            level: 1,
-            tail: U.Tails.Empty,
-          },
         },
         {
           id: 2,
           labels: [
-            { alignment: "right", content: "y" },
-            { alignment: "left", content: "g" },
+            { alignment: U.Alignments.Right, content: "y" },
+            { alignment: U.Alignments.Left, content: "g" },
           ],
           source: 1,
           target: 3,
-          style: {
-            body: U.Bodies.Solid,
-            head: U.Heads.Arrow,
-            level: 1,
-            tail: U.Tails.Empty,
-          },
         },
         {
           id: 3,
           labels: [
-            { alignment: "right", content: "z" },
-            { alignment: "left", content: "h" },
+            { alignment: U.Alignments.Right, content: "z" },
+            { alignment: U.Alignments.Left, content: "h" },
           ],
           source: 3,
           target: 2,
-          style: {
-            body: U.Bodies.Solid,
-            head: U.Heads.Arrow,
-            level: 1,
-            tail: U.Tails.Empty,
-          },
         },
       ],
       vertices: [
@@ -108,26 +84,20 @@ C   @.  D
       edges: [
         {
           id: 0,
-          labels: [],
           source: 0,
           target: 1,
           style: {
-            body: U.Bodies.Solid,
             head: U.Heads.Empty,
             level: 2,
-            tail: U.Tails.Empty,
           },
         },
         {
           id: 1,
-          labels: [],
           source: 0,
           target: 2,
           style: {
-            body: U.Bodies.Solid,
             head: U.Heads.Empty,
             level: 2,
-            tail: U.Tails.Empty,
           },
         },
       ],

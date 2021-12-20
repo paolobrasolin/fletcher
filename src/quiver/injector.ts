@@ -1,4 +1,4 @@
-import { Infer } from "superstruct";
+import { Infer, assert } from "superstruct";
 import * as S from "./schema";
 import * as U from "../universal/schema";
 
@@ -6,11 +6,12 @@ function injectVertex(
   [x, y, label, colour]: Infer<typeof S.Vertex>,
   index: number,
 ): Infer<typeof U.Vertex> {
+  assert(label, S.Label);
   return {
     id: index,
     place: [x, y], // TODO: handle generic layout
     label: {
-      content: label || "",
+      content: label,
     },
   };
 }
@@ -24,7 +25,6 @@ function injectLabels(
   return [
     {
       content: label,
-      alignment: "foo",
     },
   ];
 }

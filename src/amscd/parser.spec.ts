@@ -4,21 +4,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { format } from "util";
 
-import * as nearley from "nearley";
-
-import grammar from "./grammar";
+import { parse } from "./parser";
 import { EdgeKind } from "./schema";
-import { any, Infer } from "superstruct";
-
-//=[ Parsing ]==================================================================
-
-const parse = function (chunk: string, start?: string) {
-  const subGrammar = nearley.Grammar.fromCompiled(grammar);
-  if (start) subGrammar.start = start;
-  const parser = new nearley.Parser(subGrammar);
-  parser.feed(chunk);
-  return parser.results;
-};
 
 //=[ Compilation ]==============================================================
 

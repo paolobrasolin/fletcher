@@ -1,4 +1,5 @@
-import { Infer } from "superstruct";
+import { Infer, create } from "superstruct";
+import * as S from "./schema";
 import * as U from "../universal/schema";
 
 import { parse } from "./parser";
@@ -10,13 +11,15 @@ import { render } from "./renderer";
 // TODO: validation/coercion where necessary?
 
 export function read(input: string): Infer<typeof U.Diagram> {
-  const parsed = parse(input);
-  const injected = inject(parsed);
+  const parsed = parse(input, "main")[0];
+  const coerced = create(parsed, S.Matrix);
+  const injected = inject(coerced);
   return injected;
 }
 
 export function write(input: Infer<typeof U.Diagram>): string {
-  const projected = project(input);
+  const coerced = create(input, U.Diagram);
+  const projected = project(coerced);
   const rendered = render(projected);
   return rendered;
 }

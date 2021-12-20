@@ -1,5 +1,6 @@
 import {
   array,
+  defaulted,
   enums,
   literal,
   optional,
@@ -21,6 +22,8 @@ export enum EdgeKind {
 
 export const Vertex = string();
 
+export const Label = defaulted(string(), "");
+
 export const HorizontalEdge = tuple([
   enums([
     EdgeKind.Empty,
@@ -28,8 +31,8 @@ export const HorizontalEdge = tuple([
     EdgeKind.LeftArrow,
     EdgeKind.RightArrow,
   ]),
-  optional(string()),
-  optional(string()),
+  optional(Label),
+  optional(Label),
 ]);
 
 export const VerticalEdge = tuple([
@@ -39,8 +42,8 @@ export const VerticalEdge = tuple([
     EdgeKind.UpArrow,
     EdgeKind.DownArrow,
   ]),
-  optional(string()),
-  optional(string()),
+  optional(Label),
+  optional(Label),
 ]);
 
 export const Edge = union([HorizontalEdge, VerticalEdge]);
