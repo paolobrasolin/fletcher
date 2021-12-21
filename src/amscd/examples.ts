@@ -96,7 +96,7 @@ C   @.  D
           source: 0,
           target: 1,
           style: {
-            head: U.Heads.Empty,
+            head: U.Tips.Empty,
             level: 2,
           },
         },
@@ -105,7 +105,7 @@ C   @.  D
           source: 0,
           target: 2,
           style: {
-            head: U.Heads.Empty,
+            head: U.Tips.Empty,
             level: 2,
           },
         },

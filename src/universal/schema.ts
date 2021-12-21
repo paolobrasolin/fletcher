@@ -64,35 +64,75 @@ export const EdgeLabel = object({
   colour: Colour,
 });
 
-export enum Heads {
-  Empty,
-  Arrow,
-}
-
-export const Head = defaulted(enums([Heads.Empty, Heads.Arrow]), Heads.Arrow);
-
-export enum Bodies {
+export enum Shafts {
   Empty,
   Solid,
+  Dotted,
+  Dashed,
+  Squiggly,
+  Snakey,
 }
 
 export const Body = defaulted(
-  enums([Bodies.Empty, Bodies.Solid]),
-  Bodies.Solid,
+  enums([
+    Shafts.Empty,
+    Shafts.Solid,
+    Shafts.Dotted,
+    Shafts.Dashed,
+    Shafts.Squiggly,
+    Shafts.Snakey,
+  ]),
+  Shafts.Solid,
 );
 
-export enum Tails {
+export enum Tips {
   Empty,
   Arrow,
+  ArrowDouble,
+  ArrowReverse,
+  HarpoonLeft,
+  HarpoonRight,
+  HookLeft,
+  HookRight,
+  Bar,
 }
 
-export const Tail = defaulted(enums([Tails.Empty, Tails.Arrow]), Tails.Empty);
+export const Head = defaulted(
+  enums([
+    Tips.Empty,
+    Tips.Arrow,
+    Tips.ArrowDouble,
+    Tips.ArrowReverse,
+    Tips.HarpoonLeft,
+    Tips.HarpoonRight,
+    Tips.HookLeft,
+    Tips.HookRight,
+    Tips.Bar,
+  ]),
+  Tips.Arrow,
+);
+
+export const Tail = defaulted(
+  enums([
+    Tips.Empty,
+    Tips.Arrow,
+    Tips.ArrowDouble,
+    Tips.ArrowReverse,
+    Tips.HarpoonLeft,
+    Tips.HarpoonRight,
+    Tips.HookLeft,
+    Tips.HookRight,
+    Tips.Bar,
+  ]),
+  Tips.Empty,
+);
 
 export const Level = defaulted(min(number(), 1), 1);
 
 export const EdgeStyle = defaulted(
   partial(
     object({
+      colour: Colour,
       head: Head,
       body: Body,
       tail: Tail,

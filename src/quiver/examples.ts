@@ -68,6 +68,71 @@ const examples = [
       ],
     },
   },
+  {
+    name: "arrow options kitchen sink",
+    dsl: "WzAsMixbMCwwLCJBIl0sWzEsMCwiQiJdLFswLDEsImYiLDEseyJsYWJlbF9wb3NpdGlvbiI6MzAsIm9mZnNldCI6LTUsImN1cnZlIjotNSwic2hvcnRlbiI6eyJzb3VyY2UiOjIwLCJ0YXJnZXQiOjIwfSwibGV2ZWwiOjMsImNvbG91ciI6WzEyMCw2MCw2MF0sInN0eWxlIjp7InRhaWwiOnsibmFtZSI6Im1hcHMgdG8ifSwiYm9keSI6eyJuYW1lIjoic3F1aWdnbHkifSwiaGVhZCI6eyJuYW1lIjoiZXBpIn19fSxbMCw2MCw2MCwxXV1d",
+    ast: [
+      0,
+      2,
+      [0, 0, "A"],
+      [1, 0, "B"],
+      [
+        0,
+        1,
+        "f",
+        1,
+        {
+          colour: [120, 60, 60],
+          curve: -5,
+          label_position: 30,
+          level: 3,
+          offset: -5,
+          shorten: { source: 20, target: 20 },
+          style: {
+            body: { name: S.Shafts.Squiggly },
+            head: { name: S.Tips.Epi },
+            tail: { name: S.Tips.MapsTo },
+          },
+        },
+        [0, 60, 60, 1],
+      ],
+    ],
+    rep: {
+      edges: [
+        {
+          id: 0,
+          labels: [
+            {
+              alignment: U.Alignments.Centre,
+              colour: [0.36, 0.84, 0.36, 1],
+              content: "f",
+            },
+          ],
+          source: 0,
+          style: {
+            body: U.Shafts.Squiggly,
+            colour: [0.36, 0.84, 0.36, 1],
+            head: U.Tips.ArrowDouble,
+            level: 3,
+            tail: U.Tips.Bar,
+          },
+          target: 1,
+        },
+      ],
+      vertices: [
+        {
+          id: 0,
+          label: { content: "A" },
+          place: [0, 0],
+        },
+        {
+          id: 1,
+          label: { content: "B" },
+          place: [1, 0],
+        },
+      ],
+    },
+  },
 ];
 
 export default examples;

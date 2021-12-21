@@ -46,7 +46,7 @@ function injectLabels(
 
 function injectStyle(kind: S.EdgeKind): Infer<typeof U.EdgeStyle> {
   if ([S.EdgeKind.VerticalEquals, S.EdgeKind.HorizontalEquals].includes(kind)) {
-    return create({ head: U.Heads.Empty, level: 2 }, U.EdgeStyle);
+    return create({ head: U.Tips.Empty, level: 2 }, U.EdgeStyle);
   }
   return create({}, U.EdgeStyle);
 }

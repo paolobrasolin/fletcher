@@ -40,9 +40,9 @@ export function project({
     if (dx == 0) matrix[sy + ty] ??= [];
 
     if (
-      head == U.Heads.Arrow &&
-      body == U.Bodies.Solid &&
-      tail == U.Tails.Empty &&
+      head == U.Tips.Arrow &&
+      body == U.Shafts.Solid &&
+      tail == U.Tips.Empty &&
       level == 1
     ) {
       if (dy == +1)
@@ -54,9 +54,9 @@ export function project({
       if (dx == -1)
         matrix[2 * sy][sx + tx] = [S.EdgeKind.LeftArrow, brLab, tlLab];
     } else if (
-      head == U.Heads.Empty &&
-      body == U.Bodies.Solid &&
-      tail == U.Tails.Empty &&
+      head == U.Tips.Empty &&
+      body == U.Shafts.Solid &&
+      tail == U.Tips.Empty &&
       level == 2
     ) {
       if (dx == 0)

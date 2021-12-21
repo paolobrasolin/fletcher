@@ -79,33 +79,74 @@ export const Shorten = refine(
 
 //=[ Edge ]=====================================================================
 
+export enum Shafts {
+  Barred = "barred",
+  Cell = "cell",
+  Dashed = "dashed",
+  Dotted = "dotted",
+  None = "none",
+  Squiggly = "squiggly",
+}
+
+export enum Tips {
+  Arrowhead = "arrowhead",
+  None = "none",
+  // heads
+  Epi = "epi",
+  Harpoon = "harpoon",
+  // tails
+  Hook = "hook",
+  MapsTo = "maps to",
+  Mono = "mono",
+}
+
+export enum Sides {
+  Top = "top",
+  Bottom = "bottom",
+}
+
+export const EdgeStyleBodyName = defaulted(
+  enums([
+    Shafts.Barred,
+    Shafts.Cell,
+    Shafts.Dashed,
+    Shafts.Dotted,
+    Shafts.None,
+    Shafts.Squiggly,
+  ]),
+  Shafts.Cell,
+);
+
 export const EdgeStyleBody = partial(
   object({
     level: Level, // TODO: mark as deprecated
-    name: defaulted(
-      enums(["cell", "squiggly", "barred", "dashed", "dotted", "none"]),
-      "cell",
-    ),
+    name: EdgeStyleBodyName,
   }),
 );
 
+export const EdgeStyleHeadName = defaulted(
+  enums([Tips.Arrowhead, Tips.Epi, Tips.Harpoon, Tips.None]),
+  Tips.Arrowhead,
+);
+
+export const EdgeStyleSide = enums([Sides.Bottom, Sides.Top]);
+
 export const EdgeStyleHead = partial(
   object({
-    name: defaulted(
-      enums(["arrowhead", "none", "epi", "harpoon"]),
-      "arrowhead",
-    ),
-    side: enums(["top", "bottom"]), // NOTE: used only by harpoon
+    name: EdgeStyleHeadName,
+    side: EdgeStyleSide, // NOTE: used only by harpoon
   }),
+);
+
+export const EdgeStyleTailName = defaulted(
+  enums([Tips.Arrowhead, Tips.Hook, Tips.MapsTo, Tips.Mono, Tips.None]),
+  Tips.None,
 );
 
 export const EdgeStyleTail = partial(
   object({
-    name: defaulted(
-      enums(["none", "maps to", "mono", "hook", "arrowhead"]),
-      "none",
-    ),
-    side: enums(["top", "bottom"]), // NOTE: used only by hook
+    name: EdgeStyleTailName,
+    side: EdgeStyleSide, // NOTE: used only by hook
   }),
 );
 
@@ -127,11 +168,11 @@ export const LabelPosition = defaulted(Percent, 50);
 export const EdgeOptions = partial(
   object({
     colour: Colour,
-    curve: defaulted(integer(), 0),
+    curve: defaulted(max(min(integer(), -5), +5), 0),
     label_position: LabelPosition,
     length: Percent, // TODO: mark as deprecated
     level: defaulted(Level, 1),
-    offset: defaulted(integer(), 0),
+    offset: defaulted(max(min(integer(), -5), +5), 0),
     shorten: defaulted(Shorten, {}),
     style: defaulted(EdgeStyle, {}),
   }),
