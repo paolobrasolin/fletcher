@@ -1,4 +1,11 @@
-import { atob, decode, parse } from "./parser";
+// import {} from "superstruct";
+// import * as U from "../universal/schema";
+import * as S from "./schema";
+
+import examples from "./examples";
+import { parse } from "./parser";
+
+import { atob, decode } from "./parser";
 
 function charList(head: number, last: number, step = 1) {
   const codePoints = Array.from(
@@ -58,4 +65,10 @@ const COMMUTATIVE_SQUARE_UNPACKED = [
 
 test("a simple commutative square can be read", () => {
   expect(parse(COMMUTATIVE_SQUARE)).toEqual(COMMUTATIVE_SQUARE_UNPACKED);
+});
+
+//==============================================================================
+
+describe.each(examples)("$name", ({ dsl, ast }) => {
+  test("parse", () => expect(parse(dsl)).toEqual(ast));
 });

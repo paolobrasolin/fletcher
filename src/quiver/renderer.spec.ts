@@ -1,3 +1,10 @@
+import { create } from "superstruct";
+// import * as U from "../universal/schema";
+import * as S from "./schema";
+
+import examples from "./examples";
+import { render } from "./renderer";
+
 import { btoa, encode } from "./renderer";
 
 function charList(head: number, last: number, step = 1) {
@@ -37,4 +44,11 @@ test("btoa is compliant on latin1 range", () => {
 
 test("encode is compliant on unicode range", () => {
   expect(encode(RUNIC_RANGE)).toBe(RUNIC_RANGE_ENCODED_IN_BROWSER);
+});
+
+//==============================================================================
+
+describe.each(examples)("$name", ({ ast, dsl }) => {
+  // TODO: these tests will fail until I find a way to minify
+  xtest("render", () => expect(render(create(ast, S.Main))).toEqual(dsl));
 });
