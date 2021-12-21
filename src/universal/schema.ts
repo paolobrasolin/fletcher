@@ -3,15 +3,26 @@ import {
   array,
   defaulted,
   enums,
+  max,
   min,
   number,
   object,
-  optional,
   partial,
   string,
+  tuple,
 } from "superstruct";
 
-//=[ Common ]===================================================================
+// TODO: arbitrary precision
+// TODO: alternative colour spaces
+export const Colour = defaulted(
+  tuple([
+    max(min(number(), 0), 1), // r
+    max(min(number(), 0), 1), // g
+    max(min(number(), 0), 1), // b
+    max(min(number(), 0), 1), // a
+  ]),
+  [0, 0, 0, 1], // fully opaque black
+);
 
 export const Id = number();
 
@@ -19,6 +30,7 @@ export const Id = number();
 
 const VertexLabel = object({
   content: string(),
+  colour: Colour,
 });
 
 export const Vertex = object({
@@ -31,17 +43,25 @@ export const Vertex = object({
 
 export enum Alignments {
   Left,
+  Centre,
   Right,
+  Over,
 }
 
 export const Alignment = defaulted(
-  enums([Alignments.Left, Alignments.Right]),
+  enums([
+    Alignments.Left,
+    Alignments.Centre,
+    Alignments.Right,
+    Alignments.Over,
+  ]),
   Alignments.Left,
 );
 
 export const EdgeLabel = object({
   content: string(),
-  alignment: optional(Alignment),
+  alignment: Alignment,
+  colour: Colour,
 });
 
 export enum Heads {
@@ -86,8 +106,8 @@ export const Edge = object({
   id: Id,
   source: Id,
   target: Id,
-  labels: optional(array(EdgeLabel)),
-  style: optional(EdgeStyle),
+  labels: defaulted(array(EdgeLabel), []),
+  style: EdgeStyle,
 });
 
 //=[ Diagram ]==================================================================

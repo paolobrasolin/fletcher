@@ -106,3 +106,29 @@ This is also true for our Universal Language, UL from now on.
 - **`index`** ties together all the components.
   - It implements `read = inject ∘ coerce ∘ parse`, which translates DSL source into its representation in universal language.
   - It implements `write = render ∘ project ∘ coerce`, which translates a univesal language representation into DSL source.
+
+<!--
+
+TODO: I can think of two general guidelines for the universal schema, but I must decide.
+
+1. Everything except topology is optional.
+
+   - **injector input** needs to be `assert`ed to circumvent `* | undefined` signatures (after the guarantee of external coercion to make defaults explicit)
+   - **injectors output** might not be `create`d, as specifying only actively used properties is ok
+   - **projectors input** needs to be `assert`ed to circumvent partial signatures (after the guarantee of external coercion to make defaults explicit)
+
+   - coercion can be done automagically after injecting w/ a single create on root
+
+2. Everything is mandatory (w/ reasonable defaults).
+
+   - **injector input** AS ABOVE
+   - **injectors output** needs to be `create`d as the injector must not know about defaults and all properties are mandatory (also, to avoid breakages at every schema change)
+   - **projectors input** has clear signatures and can be destructured right away while ignoring unsupported features of the target DSL
+
+   - apparently we need no coercion, but it's just buried in injection due to stricter typing
+
+Also in general we need to use toMatchObject to keep tests simple and avoid future breakages when adding properties.
+
+So, apparently, stricter typing on the UL is a good thing!
+
+-->

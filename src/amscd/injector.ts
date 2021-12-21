@@ -1,4 +1,4 @@
-import { Infer, assert } from "superstruct";
+import { Infer, assert, create } from "superstruct";
 import * as S from "./schema";
 import * as U from "../universal/schema";
 
@@ -12,50 +12,43 @@ function injectVertex(
   j: number,
   width: number,
 ): Infer<typeof U.Vertex> {
-  return {
-    id: id(i, j, width),
-    place: [j / 2, i / 2],
-    label: {
-      content: cel,
+  return create(
+    {
+      id: id(i, j, width),
+      place: [j / 2, i / 2],
+      label: {
+        content: cel,
+      },
     },
-  };
+    U.Vertex,
+  );
 }
 
 function injectLabels(
   kind: S.EdgeKind,
   tlLab: string,
   brLab: string,
-): Infer<typeof U.EdgeLabel>[] | undefined {
+): Infer<typeof U.EdgeLabel>[] {
   const flip = [S.EdgeKind.RightArrow, S.EdgeKind.UpArrow].includes(kind);
-  if (!tlLab && !brLab) return undefined;
-  return [
-    {
+  const labels = [];
+  if (tlLab)
+    labels.push({
       content: tlLab,
       alignment: flip ? U.Alignments.Left : U.Alignments.Right,
-    },
-    {
+    });
+  if (brLab)
+    labels.push({
       content: brLab,
       alignment: flip ? U.Alignments.Right : U.Alignments.Left,
-    },
-  ].filter(({ content }) => content);
+    });
+  return labels.map((label) => create(label, U.EdgeLabel));
 }
 
-function injectStyle(kind: S.EdgeKind): Infer<typeof U.EdgeStyle> | undefined {
-  if (S.EdgeKind.Empty == kind) {
-    return {
-      head: U.Heads.Empty,
-      body: U.Bodies.Empty,
-    };
-  } else if (
-    [S.EdgeKind.VerticalEquals, S.EdgeKind.HorizontalEquals].includes(kind)
-  ) {
-    return {
-      head: U.Heads.Empty,
-      level: 2,
-    };
-  } else {
-    return undefined;
+function injectStyle(kind: S.EdgeKind): Infer<typeof U.EdgeStyle> {
+  if ([S.EdgeKind.VerticalEquals, S.EdgeKind.HorizontalEquals].includes(kind)) {
+    return create({ head: U.Heads.Empty, level: 2 }, U.EdgeStyle);
   }
+  return create({}, U.EdgeStyle);
 }
 
 function injectHorizontalEdge(
@@ -63,18 +56,20 @@ function injectHorizontalEdge(
   i: number,
   j: number,
   width: number,
-): Infer<typeof U.Edge> | undefined {
-  if (S.EdgeKind.Empty == kind) return;
+): Infer<typeof U.Edge> {
   const flip = S.EdgeKind.LeftArrow == kind ? -1 : 1;
   assert(tlLab, S.Label);
   assert(brLab, S.Label);
-  return {
-    id: 0, // temporary
-    source: id(i, j - 1 * flip, width),
-    target: id(i, j + 1 * flip, width),
-    labels: injectLabels(kind, tlLab, brLab),
-    style: injectStyle(kind),
-  };
+  return create(
+    {
+      id: 0, // temporary
+      source: id(i, j - 1 * flip, width),
+      target: id(i, j + 1 * flip, width),
+      labels: injectLabels(kind, tlLab, brLab),
+      style: injectStyle(kind),
+    },
+    U.Edge,
+  );
 }
 
 function injectVerticalEdge(
@@ -82,18 +77,20 @@ function injectVerticalEdge(
   i: number,
   j: number,
   width: number,
-): Infer<typeof U.Edge> | undefined {
-  if (S.EdgeKind.Empty == kind) return;
+): Infer<typeof U.Edge> {
   const flip = S.EdgeKind.UpArrow == kind ? -1 : 1;
   assert(tlLab, S.Label);
   assert(brLab, S.Label);
-  return {
-    id: 0, // temporary
-    source: id(i - 1 * flip, j, width),
-    target: id(i + 1 * flip, j, width),
-    labels: injectLabels(kind, tlLab, brLab),
-    style: injectStyle(kind),
-  };
+  return create(
+    {
+      id: 0, // temporary
+      source: id(i - 1 * flip, j, width),
+      target: id(i + 1 * flip, j, width),
+      labels: injectLabels(kind, tlLab, brLab),
+      style: injectStyle(kind),
+    },
+    U.Edge,
+  );
 }
 
 export function inject(input: Infer<typeof S.Matrix>): Infer<typeof U.Diagram> {
@@ -113,12 +110,14 @@ export function inject(input: Infer<typeof S.Matrix>): Infer<typeof U.Diagram> {
           if (vertex) vertices.push(vertex);
         } else {
           assert(cell, S.HorizontalEdge);
+          if (S.EdgeKind.Empty == cell[0]) return;
           const edge = injectHorizontalEdge(cell, i, j, width);
           if (edge) edges.push(edge);
         }
       } else {
         if (j % 2 == 0) {
           assert(cell, S.VerticalEdge);
+          if (S.EdgeKind.Empty == cell[0]) return;
           const edge = injectVerticalEdge(cell, i, j, width);
           if (edge) edges.push(edge);
         } else {
@@ -133,5 +132,5 @@ export function inject(input: Infer<typeof S.Matrix>): Infer<typeof U.Diagram> {
     edge.id = index;
   });
 
-  return { vertices, edges };
+  return create({ vertices, edges }, U.Diagram);
 }

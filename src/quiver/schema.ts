@@ -122,11 +122,13 @@ export const EdgeStyle = partial(
   }),
 );
 
+export const LabelPosition = defaulted(Percent, 50);
+
 export const EdgeOptions = partial(
   object({
     colour: Colour,
     curve: defaulted(integer(), 0),
-    label_position: defaulted(Percent, 50),
+    label_position: LabelPosition,
     length: Percent, // TODO: mark as deprecated
     level: defaulted(Level, 1),
     offset: defaulted(integer(), 0),

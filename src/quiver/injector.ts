@@ -1,17 +1,29 @@
-import { Infer, assert } from "superstruct";
+import { Infer, assert, create, number } from "superstruct";
 import * as S from "./schema";
 import * as U from "../universal/schema";
+
+import { hslToRgb } from "../util";
+
+export function injectColour([h, s, l, a]: Infer<typeof S.Colour>): Infer<
+  typeof U.Colour
+> {
+  assert(a, number());
+  const [r, g, b] = hslToRgb([h, s / 100, l / 100]);
+  return [r, g, b, a];
+}
 
 function injectVertex(
   [x, y, label, colour]: Infer<typeof S.Vertex>,
   index: number,
 ): Infer<typeof U.Vertex> {
   assert(label, S.Label);
+  assert(colour, S.Colour);
   return {
     id: index,
     place: [x, y], // TODO: handle generic layout
     label: {
       content: label,
+      colour: injectColour(colour),
     },
   };
 }
@@ -22,10 +34,25 @@ function injectLabels(
   options: Infer<typeof S.EdgeOptions> | undefined,
 ): Infer<typeof U.EdgeLabel>[] {
   if (!label) return [];
+  assert(alignment, S.Alignment);
+  assert(options, S.EdgeOptions);
+  const { label_position, colour } = options;
+  assert(colour, S.Colour);
+  assert(label_position, S.LabelPosition);
   return [
-    {
-      content: label,
-    },
+    create(
+      {
+        content: label,
+        alignment: [
+          U.Alignments.Left,
+          U.Alignments.Centre,
+          U.Alignments.Right,
+          U.Alignments.Over,
+        ][alignment],
+        colour: injectColour(colour),
+      },
+      U.EdgeLabel,
+    ),
   ];
 }
 

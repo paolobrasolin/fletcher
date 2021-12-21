@@ -1,4 +1,5 @@
 import * as U from "../universal/schema";
+import { create } from "superstruct";
 
 import { read, write } from ".";
 
@@ -126,6 +127,7 @@ C   @.  D
     },
   ],
 ])("%s", (_, sourcecode, representation) => {
-  test("read", () => expect(read(sourcecode)).toEqual(representation));
-  test("write", () => expect(write(representation)).toEqual(sourcecode));
+  test("read", () => expect(read(sourcecode)).toMatchObject(representation));
+  test("write", () =>
+    expect(write(create(representation, U.Diagram))).toEqual(sourcecode));
 });

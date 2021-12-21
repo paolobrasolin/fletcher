@@ -2,32 +2,7 @@ import { create } from "superstruct";
 import * as U from "../universal/schema";
 import * as S from "./schema";
 
-import { injectColour, inject } from "./injector";
-
-describe("injectColour", () => {
-  test.each([
-    [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    [
-      [0, 100, 50, 1],
-      [1, 0, 0, 1],
-    ],
-    [
-      [120, 100, 50, 1],
-      [0, 1, 0, 1],
-    ],
-    [
-      [240, 100, 50, 1],
-      [0, 0, 1, 1],
-    ],
-  ])("%O", (input, output) => {
-    expect(injectColour(create(input, S.Colour))).toEqual(
-      create(output, U.Colour),
-    );
-  });
-});
+import { project } from "./projector";
 
 describe.each([
   [
@@ -233,5 +208,5 @@ describe.each([
     },
   ],
 ])("%s", (_, ast, ul) => {
-  test("read", () => expect(inject(create(ast, S.Main))).toMatchObject(ul));
+  xtest("project", () => expect(project(create(ul, U.Diagram))).toEqual(ast));
 });
