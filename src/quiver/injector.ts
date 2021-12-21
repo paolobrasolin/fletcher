@@ -105,7 +105,7 @@ function injectEdgeStyle({
   assert(level, S.Level);
   assert(colour, S.Colour);
 
-  // TODO: handle special `name`d arrows
+  // TODO: curve, label_position, offset, shorten
 
   return create(
     {
@@ -124,13 +124,26 @@ function injectEdge(
   index: number,
 ): Infer<typeof U.Edge> {
   assert(options, S.EdgeOptions);
+  assert(options.style, S.EdgeStyle);
+  assert(options.style.name, S.EdgeStyleName);
+
+  let style, labels;
+  if (S.EdgeStyleNames.Arrow == options.style.name) {
+    style = injectEdgeStyle(options);
+    labels = injectLabels(label, alignment, options);
+  } else {
+    style = { body: U.Shafts.Empty, head: U.Tips.Empty, tail: U.Tips.Empty };
+    // TODO: adjunction, corner, corner-inverse
+    labels = [{}];
+  }
+
   return create(
     {
       id: index,
       source: source,
       target: target,
-      style: injectEdgeStyle(options),
-      labels: injectLabels(label, alignment, options),
+      style: style,
+      labels: labels,
     },
     U.Edge,
   );

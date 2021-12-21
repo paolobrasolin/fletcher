@@ -117,11 +117,14 @@ export const EdgeStyleBodyName = defaulted(
   Shafts.Cell,
 );
 
-export const EdgeStyleBody = partial(
-  object({
-    level: Level, // TODO: mark as deprecated
-    name: EdgeStyleBodyName,
-  }),
+export const EdgeStyleBody = defaulted(
+  partial(
+    object({
+      level: Level, // TODO: mark as deprecated
+      name: EdgeStyleBodyName,
+    }),
+  ),
+  {},
 );
 
 export const EdgeStyleHeadName = defaulted(
@@ -131,11 +134,14 @@ export const EdgeStyleHeadName = defaulted(
 
 export const EdgeStyleSide = enums([Sides.Bottom, Sides.Top]);
 
-export const EdgeStyleHead = partial(
-  object({
-    name: EdgeStyleHeadName,
-    side: EdgeStyleSide, // NOTE: used only by harpoon
-  }),
+export const EdgeStyleHead = defaulted(
+  partial(
+    object({
+      name: EdgeStyleHeadName,
+      side: EdgeStyleSide, // NOTE: used only by harpoon
+    }),
+  ),
+  {},
 );
 
 export const EdgeStyleTailName = defaulted(
@@ -143,23 +149,40 @@ export const EdgeStyleTailName = defaulted(
   Tips.None,
 );
 
-export const EdgeStyleTail = partial(
-  object({
-    name: EdgeStyleTailName,
-    side: EdgeStyleSide, // NOTE: used only by hook
-  }),
+export const EdgeStyleTail = defaulted(
+  partial(
+    object({
+      name: EdgeStyleTailName,
+      side: EdgeStyleSide, // NOTE: used only by hook
+    }),
+  ),
+  {},
+);
+
+export enum EdgeStyleNames {
+  Arrow = "arrow",
+  Adjunction = "adjunction",
+  Corner = "corner",
+  CornerInverse = "corner-inverse",
+}
+
+export const EdgeStyleName = defaulted(
+  enums([
+    EdgeStyleNames.Arrow,
+    EdgeStyleNames.Adjunction,
+    EdgeStyleNames.Corner,
+    EdgeStyleNames.CornerInverse,
+  ]),
+  EdgeStyleNames.Arrow,
 );
 
 export const EdgeStyle = partial(
   object({
     // NOTE: tail/body/head are used only when name is arrow
-    body: defaulted(EdgeStyleBody, {}),
-    head: defaulted(EdgeStyleHead, {}),
-    name: defaulted(
-      enums(["arrow", "adjunction", "corner", "corner-inverse"]),
-      "arrow",
-    ),
-    tail: defaulted(EdgeStyleTail, {}),
+    body: EdgeStyleBody,
+    head: EdgeStyleHead,
+    name: EdgeStyleName,
+    tail: EdgeStyleTail,
   }),
 );
 
