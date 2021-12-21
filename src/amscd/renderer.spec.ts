@@ -86,5 +86,5 @@ describe("renderEdge", () => {
 //==============================================================================
 
 describe.each(examples)("$name", ({ ast, dsl }) => {
-  test("parse", () => expect(render(create(ast, S.Matrix))).toEqual(dsl));
+  test("render", () => expect(render(create(ast, S.Matrix))).toEqual(dsl));
 });
