@@ -22,23 +22,22 @@
 This project is a sourcecode transpiler for commutative diagrams.
 
 The aim is being able to translate from and to **any** format, most of which are LaTeX DSLs.
-Here is the current progress:
+
+Here is the progress on the planned ones:
 
 | Target                   | Import       | Export       |
 | ------------------------ | ------------ | ------------ |
-| [amscd][amscd-url]       | `▓▓▓▓▓▓▓▓▓▓` | `▓▓▓▓▓▓▓▓▓▓` |
-| [amscdx][amscdx-url]     | `▓▓▓▓░░░░░░` | `░░░░░░░░░░` |
+| [amscd][amscd-url]       | `██████████` | `██████████` |
+| [amscdx][amscdx-url]     | `██████░░░░` | `███████░░░` |
 | [CoDi][codi-url]         | `░░░░░░░░░░` | `░░░░░░░░░░` |
-| [DOT][dot-url]           | `░░░░░░░░░░` | `░░░░░░░░░░` |
-| [quiver][quiver-url]     | `▓▓▓▓▓▓▓▓░░` | `▓▓▓▓▓▓▓░░░` |
-| [tikz-cd][codi-url]      | `░░░░░░░░░░` | `░░░░░░░░░░` |
-| [xymatrix][xymatrix-url] | `▓▓░░░░░░░░` | `░░░░░░░░░░` |
+| [quiver][quiver-url]     | `████████░░` | `███████░░░` |
+| [tikz-cd][tikzcd-url]    | `░░░░░░░░░░` | `░░░░░░░░░░` |
+| [xymatrix][xymatrix-url] | `██░░░░░░░░` | `░░░░░░░░░░` |
 | ...                      |              |              |
 
 [amscd-url]: https://ctan.org/pkg/amscd
 [amscdx-url]: https://ctan.org/pkg/amscdx
 [codi-url]: https://github.com/paolobrasolin/commutative-diagrams/
-[dot-url]: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
 [quiver-url]: https://github.com/varkor/quiver
 [tikzcd-url]: https://github.com/astoff/tikz-cd
 [xymatrix-url]: https://ctan.org/pkg/xymatrix
