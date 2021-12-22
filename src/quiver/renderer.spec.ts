@@ -2,7 +2,7 @@ import { create } from "superstruct";
 // import * as U from "../universal/schema";
 import * as S from "./schema";
 
-import examples from "./examples";
+import examples from "./examples.spec";
 import { render } from "./renderer";
 
 import { btoa, encode } from "./renderer";

@@ -1,3 +1,4 @@
+// import { create } from "superstruct";
 import * as U from "../universal/schema";
 import * as S from "./schema";
 
@@ -228,5 +229,15 @@ C   @.  D
     },
   },
 ];
+
+describe.each(examples)("$name", ({ name, dsl, ast, rep }) => {
+  test("name is present", () => expect(name).not.toBeFalsy());
+  test("DSL code is present", () => expect(dsl).not.toBeFalsy());
+  // TODO: I tried checking coercion here, but it seems the data is modified in place for later tests, which is... disturbing. Is it happening anywhere else?
+  // test("DSL AST is coercible", () =>
+  //   expect(() => create(ast, S.Matrix)).not.toThrow());
+  // test("UL AST is coercible", () =>
+  //   expect(() => create(rep, U.Diagram)).not.toThrow());
+});
 
 export default examples;

@@ -2,7 +2,7 @@
 // import * as U from "../universal/schema";
 import * as S from "./schema";
 
-import examples from "./examples";
+import examples from "./examples.spec";
 import { parse } from "./parser";
 
 import { atob, decode } from "./parser";
