@@ -118,14 +118,16 @@ function projectTail(
   );
 }
 
-function projectEdgeStyle({
+export function projectEdgeStyle({
   head,
   body,
   tail,
 }: Infer<typeof U.EdgeStyle>): Infer<typeof S.EdgeStyle> {
   // TODO: handle unsupported shafts/tips with warning
+  // TODO: handle special arrows
   return create(
     {
+      // name: S.EdgeStyleNames.Arrow,
       body: projectBody(body),
       head: projectHead(head),
       tail: projectTail(tail),
