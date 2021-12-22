@@ -26,11 +26,11 @@ Here is the current progress:
 
 | Target                   | Import       | Export       |
 | ------------------------ | ------------ | ------------ |
-| [amscd][amscd-url]       | `▓▓▓▓▓▓▓▓▓░` | `▓▓▓▓▓▓▓▓▓░` |
+| [amscd][amscd-url]       | `▓▓▓▓▓▓▓▓▓▓` | `▓▓▓▓▓▓▓▓▓▓` |
 | [amscdx][amscdx-url]     | `▓▓▓▓░░░░░░` | `░░░░░░░░░░` |
 | [CoDi][codi-url]         | `░░░░░░░░░░` | `░░░░░░░░░░` |
 | [DOT][dot-url]           | `░░░░░░░░░░` | `░░░░░░░░░░` |
-| [quiver][quiver-url]     | `▓▓▓▓▓▓▓▓░░` | `░░░░░░░░░░` |
+| [quiver][quiver-url]     | `▓▓▓▓▓▓▓▓░░` | `▓▓▓▓▓▓▓░░░` |
 | [tikz-cd][codi-url]      | `░░░░░░░░░░` | `░░░░░░░░░░` |
 | [xymatrix][xymatrix-url] | `▓▓░░░░░░░░` | `░░░░░░░░░░` |
 | ...                      |              |              |
