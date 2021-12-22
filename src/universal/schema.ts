@@ -7,7 +7,6 @@ import {
   min,
   number,
   object,
-  partial,
   string,
   tuple,
 } from "superstruct";
@@ -130,15 +129,13 @@ export const Tail = defaulted(
 export const Level = defaulted(min(number(), 1), 1);
 
 export const EdgeStyle = defaulted(
-  partial(
-    object({
-      colour: Colour,
-      head: Head,
-      body: Body,
-      tail: Tail,
-      level: Level,
-    }),
-  ),
+  object({
+    colour: Colour,
+    head: Head,
+    body: Body,
+    tail: Tail,
+    level: Level,
+  }),
   {},
 );
 

@@ -6,6 +6,6 @@ import examples from "./examples";
 import { project } from "./projector";
 
 describe.each(examples)("$name", ({ rep, ast }) => {
-  xtest("project", () =>
+  test("project", () =>
     expect(project(create(rep, U.Diagram))).toEqual(create(ast, S.Main)));
 });
