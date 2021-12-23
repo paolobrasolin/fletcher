@@ -43,91 +43,102 @@ Here is the progress on the planned ones:
 [xymatrix-url]: https://ctan.org/pkg/xymatrix
 [other-url]: https://ctan.org/topic/diagram-comm
 
-## Abstract considerations
+## Abstract nonsense
 
-See https://github.com/paolobrasolin/ouroboros
+Private repo: https://github.com/paolobrasolin/ouroboros
 
 ## Practical considerations
 
-There are many roads to implementation, but we can fix two constraints:
+A transpiler like this could be realized with many technologies.
+I have a few end goals:
 
-- this must work in a browser
-- this must be written in a pleasant language
+- integrating this in [quiver][quiver-url];
+- creating a conversion service with no backend infrastructure;
+- using a pleasant language, with good libraries;
+- learning something new.
 
-[TypeScript](typescript-url) is a natural choice and, among the [many JS parsing libraries][js-parsing-url], [nearley.js][nearley-url] seems to be outstanding: low entry point, separate grammar files, modular lexers, unparser, and many other features.
+[TypeScript](typescript-url) therefore looks like the best choice.
+On top of it, two outstanding libraries that trivialize a lot of groundwork are [nearley.js][nearley-url] for grammar-based parsing and [Superstruct][superstruct-url] for data validation and coercion.
 
 [typescript-url]: https://www.typescriptlang.org/
-[js-parsing-url]: https://tomassetti.me/parsing-in-javascript/
 [nearley-url]: https://nearley.js.org/
+[superstruct-url]: https://docs.superstructjs.org/
 
 ## Architectural guidelines
 
-Each DSL has a dedicated folder containing a few components.
+Freely transpiling among many DSLs requires a transpilation procedure for each ordered source/target language pair we want to connect.
 
-This is also true for our Universal Language, UL from now on.
+How many transpilers do we need in total?
 
-- **`schema`** describes the AST with some `Struct`s implemented with `superstruct`.
+- If we connect `n` DSLs directly, then we need two times `n(n-1)/2` (i.e. twice the number of edges of a [`Kₙ graph`][complete-graph-url]).
+- If we connect `n` DSLs through an artificial Universal Language, then we need two times `n` (i.e. twice the number of edges of the [`Sₙ graph`](star-graph-url)).
 
-  - It accounts for all optional fragments via `optional`.
-    This allows to validating anything which is valid for the original processor, however minimal.
-  - It accounts for all implicit defaults via `defaulted`.
-    This allows the schema to be the single source of truth about the defaults, and consumers of the AST will trust coercion to make them explicit so they need no knowledge of them.
-  - `defaulted`s should be on children `Struct`s, while `optional`s should be on the parent `Struct`s.
+[star-graph-url]: https://en.wikipedia.org/wiki/Star_(graph_theory)
+[complete-graph-url]: https://en.wikipedia.org/wiki/Complete_graph
+
+Implementing an Universal Language (UL for short) clearly is the winning strategy.
+
+Each DSL will have a dedicated folder
+It will contain a some components allowing it to be transpiled back and forth from the UL.
+
+- **`schema`** describes the AST with `superstruct` structures.
+
+  - Optional fragments of the DSL are accounted for by using `optional`.
+    Anything which is valid for the original processor must `validate`.
+  - Implicit defaults of the DSL are accounted for by using `defaulted`.
+    The schema must be the single source of truth for about the DSL defaults: consumers of the AST must simply trust coercion (e.g. via `create`) to make them defaults explicit.
+  - In nested objects `defaulted`s must be on children `Struct`s, while `optional`s should be on the parent `Struct`s.
     This allows `assert`s to be a simple way (after coercion) to get rid of the `... | undefined` from the signatures of `optional` parts when processing the AST.
-  - _This is the only component of the UL._ Right now there's no need for it to be a public API, and we use it just for internal representation.
-    TODO: everything is optional apart from topology
 
-- **`grammar`** is an optional `nearley` grammar which might be used by the `parser`.
+- **`grammar`** describes the DSL with a `nearley` grammar.
 
-  - It should not be ambiguous.
+  - It is an optional component which might be used by the `parser`.
+  - It must not be ambiguous.
 
 - **`parser`** implements a `parse` function to transform sourcecode into an AST.
 
   - `parse` is responsible to perform any extra necessary decoding/deserialization on the input.
   - `parse` outputs a bona fide object respecting `schema`, meaning that the signatures are correct but no explicit validation (and especially no coercion) is done at this time.
-  - `parse` outputs an array to account for ambiguity and simplify testing, but it should only contain a single object as we ban ambiguous grammars.
+  - `parse` may output an array to account for ambiguity and simplify testing, but it should only contain a single object as we ban ambiguous grammars.
 
 - **`injector`** implements an `inject` function mapping the DSL AST into the UL AST.
 
-  - `inject` must assume scheme coercion has been done, so it can have no knowledge of the DSL defaults and can simply perform a few `assert`s to check for presence.
-  - `inject` must output all and only the characteristics present in the input, regardless of the defaults of the UL schema (if any) -- in other terms, no assumptions on the UL default must be made.
-    This allows specific testing and avoids the need for backtracking when adding new features to the UL.
+  - `inject` must assume scheme coercion has been done, so it can have no knowledge of the DSL defaults and can simply perform a few `assert`s to check for presence and cirvumvent the inconvenient `* | undefined` signatures.
+  - `inject` must `create` its output, so it can avoid reasoning only about the features being actively used.
+    This allows targeted testing with `toMatchObject` and avoids the need for backtracking when adding new features to the UL, all while keeping the UL fully explicit.
 
 - **`projector`** implements a `project` function mapping the UL AST onto the DSL AST.
 
-  - `project` makes no assumpion about scheme coercion, and it maps only features available in the target DSL.
-  - **TODO**: decide a reasonable policy for features which can only be _approximated_.
+  - `project` maps only features available in the target DSL.
+  - **TODO**: a policy for approximating missing features and collecting waringns for unsupported ones must be estabilished.
 
 - **`renderer`** implements a `render` function to transform an AST to sourcecode.
 
   - **TODO**: perhaps `render` should include a minification process to produce the minimal code leveraging implicit defaults of the DSL.
+    Maybe avoiding coercion is enough, but I haven't made up my mind yet.
 
-- **`index`** ties together all the components.
+- **`index`** ties together all components into a simple API.
   - It implements `read = inject ∘ coerce ∘ parse`, which translates DSL source into its representation in universal language.
   - It implements `write = render ∘ project ∘ coerce`, which translates a univesal language representation into DSL source.
+    (**NOTE:** coercion here can be omitted as long as we keep the UL completely explicit.)
 
-<!--
+The UL will also have its own folder.
+It will contain much less than other DSLs, since it's used only for internal representation.
 
-TODO: I can think of two general guidelines for the universal schema, but I must decide.
+- **`schema`** describes the AST with `superstruct` structures.
 
-1. Everything except topology is optional.
+  - This is the only component of the UL and is used only for internal representation.
 
-   - **injector input** needs to be `assert`ed to circumvent `* | undefined` signatures (after the guarantee of external coercion to make defaults explicit)
-   - **injectors output** might not be `create`d, as specifying only actively used properties is ok
-   - **projectors input** needs to be `assert`ed to circumvent partial signatures (after the guarantee of external coercion to make defaults explicit)
+A few more words should be spent about the design of the UL, as two very different approaches can be followed for the usage of `optional` structures.
 
-   - coercion can be done automagically after injecting w/ a single create on root
+1. Everything is optional (except topology).
 
-2. Everything is mandatory (w/ reasonable defaults).
+   - **PRO**: _injectors output_ can be limited to the used attributes
+   - **CON**: _projectors input_ needs to be `assert`ed to circumvent partial signatures (after the input has been coerced externally, of course)
 
-   - **injector input** AS ABOVE
-   - **injectors output** needs to be `create`d as the injector must not know about defaults and all properties are mandatory (also, to avoid breakages at every schema change)
-   - **projectors input** has clear signatures and can be destructured right away while ignoring unsupported features of the target DSL
+2. Everything is mandatory (and has reasonable defaults).
 
-   - apparently we need no coercion, but it's just buried in injection due to stricter typing
+   - **CON**: _injectors output_ must be `create`d as the injector must not know about defaults and all properties are mandatory; this also avoids breakage on UL extensions
+   - **PRO**: _projectors input_ has simple signatures (no `* | undefined`) and can be destructured right away while simply ignoring unsupported features of the target DSL
 
-Also in general we need to use toMatchObject to keep tests simple and avoid future breakages when adding properties.
-
-So, apparently, stricter typing on the UL is a good thing!
-
--->
+It's a matter of balance, but ultimately the latter alternative has slightly better ergonomics, and a fully explicit UL schema should be simpler to reason about.
